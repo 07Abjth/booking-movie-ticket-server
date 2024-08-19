@@ -4,21 +4,20 @@ import {
   getShowById,
   getShowsByMovie,
   getShowsByTheater,
-} from '../controllers/showControllers.js';
-import { protect } from '../middlewares/authMiddleware.js';
+} from '../../controllers/showControllers.js';
 
 const router = express.Router();
 
 // Route to get all shows
-router.route('/').get(getShows);
+router.get('/', getShows);
 
 // Route to get a specific show by ID
-router.route('/:id').get(getShowById);
+router.get('/:id', getShowById);
 
 // Route to get shows for a specific movie
-router.route('/movie/:movieId').get(getShowsByMovie);
+router.get('/movie/:movieId', getShowsByMovie);
 
 // Route to get shows for a specific theater
-router.route('/theater/:theaterId').get(getShowsByTheater);
+router.get('/theater/:theaterId', getShowsByTheater);
 
 export default router;

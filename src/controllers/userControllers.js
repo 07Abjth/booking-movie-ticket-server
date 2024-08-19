@@ -1,6 +1,5 @@
-
-import bcrypt from 'bcrypt';
 import User from '../models/userModel.js';
+import bcrypt from 'bcrypt';
 import generateToken from '../utils/generateToken.js';
 
 // Register a new user
@@ -27,24 +26,13 @@ export const registerUser = async (req, res) => {
     const user = new User({ name, email, password: hashedPassword, phoneNumber });
     await user.save();
 
-    // Generate a token
-    const token = generateToken(user._id);
-
-    // Set the token in a cookie
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-    });
-
-    // Send response
+    // Send response without generating a token
     return res.status(201).json({
       success: true,
       message: "User created successfully",
       _id: user._id,
       name: user.name,
       email: user.email,
-      token,
     });
 
   } catch (error) {
@@ -52,42 +40,48 @@ export const registerUser = async (req, res) => {
   }
 };
 
+
+
 // Log in a user
 export const loginUser = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-        // Validate input fields
-        if (!email || !password) {
-            return res.status(400).json({ success: false, message: "All fields required." });
-        }
-
-        // Find the user by email
-        const userExist = await User.findOne({ email });
-        if (!userExist) {
-            return res.status(404).json({ success: false, message: 'User does not exist' });
-        }
- 
-        // Compare provided password with stored hashed password
-        const passwordMatch = bcrypt.compareSync(password, userExist.password);
-        if (!passwordMatch) {
-            return res.status(404).json({ success: false, message: 'User not authenticated.' });
-        }
- 
-
-        // Generate a JWT token
-        const token = generateToken(email);
-
-        // Set the token in a cookie with security settings
-        res.cookie('token', token)
-
-        res.json({success:true, message:"user login successfully"})
-
-
-    } catch (error) {
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    // Validate input fields
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "All fields required." });
     }
+
+    // Find the user by email
+    const userExist = await User.findOne({ email });
+    if (!userExist) {
+      return res.status(404).json({ success: false, message: 'User does not exist' });
+    }
+
+    // Compare provided password with stored hashed password
+    const passwordMatch = bcrypt.compareSync(password, userExist.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid password' });
+    }
+
+    // Generate a JWT token
+    const token = generateToken(userExist._id, userExist.role);
+
+    // Set the token in a cookie with security settings
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Secure flag for HTTPS
+      sameSite: 'strict', // SameSite attribute to prevent CSRF
+    });
+
+    // Send response
+    res.json({ success: true, message: "User logged in successfully", token });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
 };
+
 
 
 

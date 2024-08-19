@@ -30,8 +30,6 @@ export const createTheater = async (req, res) => {
   }
 };
 
-
-
 // Get all theaters
 export const getTheaters = async (req, res) => {
   try {

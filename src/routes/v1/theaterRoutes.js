@@ -12,7 +12,7 @@ router.post('/create', createTheater);
 router.get('/get-theater', getTheaters);
 
 // Route to get a specific theater by ID
-router.get('/get-specific-theater/:id', getTheaterById);
+router.get('/get-theater-byId/:id', getTheaterById);
 
 // Route to update a theater by ID
 router.put('/update-theater/:id', updateTheater);

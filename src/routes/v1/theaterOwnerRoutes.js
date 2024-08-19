@@ -20,8 +20,10 @@ const router = express.Router();
 // Account Management Routes
 router.post('/register', createTheaterOwnerAccount);  // Theater owner account creation
 router.post('/login', theaterOwnerLogin);             // Theater owner login
-router.put('/profile/update', authTheaterOwner, updateTheaterOwnerProfile); // Update theater owner profile
-router.get('/profile', authTheaterOwner, getTheaterOwnerProfile);           // Fetch theater owner profile
+router.put('/profile/update', authTheaterOwner, updateTheaterOwnerProfile);
+router.put('/profile-update/:id', authTheaterOwner, updateTheaterOwnerProfile); 
+
+router.get('/profile/', authTheaterOwner, getTheaterOwnerProfile);           
 
 // Showtimes Management Routes
 router.post('/showtime/create', authTheaterOwner, createShowtime);

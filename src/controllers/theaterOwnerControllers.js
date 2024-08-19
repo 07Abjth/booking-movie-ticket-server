@@ -29,10 +29,16 @@ console.log(req.body);
   }
 };
 
+
 // Log in a theater owner
 export const theaterOwnerLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Validate input fields
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Email and password are required' });
+    }
 
     // Find the theater owner by email
     const owner = await TheaterOwner.findOne({ email });
@@ -49,11 +55,20 @@ export const theaterOwnerLogin = async (req, res) => {
     // Generate JWT token
     const token = generateToken(owner._id, owner.role);
 
-    res.status(200).json({ success: true, token });
+    // Set the token in a cookie (if using cookies)
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Secure flag for HTTPS
+      sameSite: 'strict', // SameSite attribute to prevent CSRF
+    });
+
+    // Send response
+    res.status(200).json({ success: true, message: 'Login successful', token });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
+
 
 // Update the theater owner profile
 export const updateTheaterOwnerProfile = async (req, res) => {
@@ -77,20 +92,31 @@ export const updateTheaterOwnerProfile = async (req, res) => {
   }
 };
 
+
 // Fetch the theater owner profile details
 export const getTheaterOwnerProfile = async (req, res) => {
   try {
-    const owner = await TheaterOwner.findById(req.user.id);
+    // Validate the ID
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'Invalid theater owner ID' });
+    }
 
+    // Find the theater owner by ID
+    const owner = await TheaterOwner.findById(req.params.id);
+
+    // If owner is not found, return 404
     if (!owner) {
       return res.status(404).json({ success: false, message: 'Theater owner not found' });
     }
 
+    // Return the theater owner's details
     res.status(200).json({ success: true, data: owner });
   } catch (error) {
+    // Handle errors during the request
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // Showtime Management Controllers
 
@@ -192,6 +218,8 @@ export const getTheaterDetails = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Theater not found' });
     }
 
+  
+    
     res.status(200).json({ success: true, data: theater });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

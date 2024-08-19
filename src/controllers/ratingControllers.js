@@ -1,5 +1,4 @@
-import Rating from '../models/ratingModel'; // Adjust the path as needed
-import User from '../models/userModel'; // Assuming you have a User model
+import Rating from '../models/ratingModel.js'; 
 
 // Create a new rating
 export const createRating = async (req, res) => {
