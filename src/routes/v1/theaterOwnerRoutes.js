@@ -1,38 +1,38 @@
 import express from 'express';
-import { authTheaterOwner } from '../../middleware/authTheaterOwner.js';  // Middleware for theater owner authentication
+import { authTheaterOwner } from '../../middleware/authTheaterOwner.js';
 import {
-    theaterOwnerLogin,         // Login for theater owners
-    createTheaterOwnerAccount, // Register a new theater owner account
-    updateTheaterOwnerProfile, // Update theater owner profile
-    getTheaterOwnerProfile,    // Fetch theater owner profile details
-    createShowtime,       
-    updateShowtime,       
-    deleteShowtime,       
-    getAllShowtimes,      
-    updateTheaterDetails, 
-    getTheaterDetails   
+  theaterOwnerLogin,
+  createTheaterOwnerAccount,
+  updateTheaterOwnerProfile,
+  getTheaterOwnerProfile,
+  createShow,
+  updateShow,
+  deleteShow,
+  getAllShows, 
+  createTheater,
+  updateTheater,
+  deleteTheater,
+  getTheaterDetails
 } from '../../controllers/theaterOwnerControllers.js';
-
-
 
 const router = express.Router();
 
 // Account Management Routes
-router.post('/register', createTheaterOwnerAccount);  // Theater owner account creation
-router.post('/login', theaterOwnerLogin);             // Theater owner login
-router.put('/profile/update', authTheaterOwner, updateTheaterOwnerProfile);
-router.put('/profile-update/:id', authTheaterOwner, updateTheaterOwnerProfile); 
+router.post('/register', createTheaterOwnerAccount);
+router.post('/login', theaterOwnerLogin);
+router.put('/profile/update/:id', authTheaterOwner, updateTheaterOwnerProfile);
+router.get('/profile/:id', authTheaterOwner, getTheaterOwnerProfile);
 
-router.get('/profile/', authTheaterOwner, getTheaterOwnerProfile);           
-
-// Showtimes Management Routes
-router.post('/showtime/create', authTheaterOwner, createShowtime);
-router.put('/showtime/update/:id', authTheaterOwner, updateShowtime);
-router.delete('/showtime/delete/:id', authTheaterOwner, deleteShowtime);
-router.get('/showtimes', authTheaterOwner, getAllShowtimes);
+// Showtime Management Routes
+router.post('/show/create', authTheaterOwner, createShow); // Updated route to match function name
+router.put('/show/update/:id', authTheaterOwner, updateShow); // Updated route to match function name
+router.delete('/show/delete/:id', authTheaterOwner, deleteShow); // Updated route to match function name
+router.get('/shows', authTheaterOwner, getAllShows); // Updated route to match function name
 
 // Theater Management Routes
-router.put('/theater/update', authTheaterOwner, updateTheaterDetails);
+router.post('/theater/create', authTheaterOwner, createTheater);
+router.put('/theater/update/:theaterId', authTheaterOwner, updateTheater);
+router.delete('/theater/delete/:theaterId', authTheaterOwner, deleteTheater);
 router.get('/theater/details', authTheaterOwner, getTheaterDetails);
 
 export default router;

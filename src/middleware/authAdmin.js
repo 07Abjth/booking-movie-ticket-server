@@ -2,26 +2,31 @@ import jwt from 'jsonwebtoken';
 
 export const authAdmin = (req, res, next) => {
   try {
-    // Extract token from cookies
-    const token = req.cookies.token || '';
+    // Extract the token from cookies
+    const {token} = req.cookies || '';
 
-    // Check if token is missing
     if (!token) {
-      return res.status(401).json({ success: false, message: 'No token provided, authorization denied.' });
+      return res.status(401).json({ success: false, message: 'user not authenticated.' });
     }
 
     // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const tokenVerified = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Check if the user has the 'admin' role
-    if (!decoded || decoded.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Access denied. Admins only.' });
+    // Log the decoded token (for debugging purposes)
+    console.log(tokenVerified);
+
+    if(!tokenVerified){
+      return res.status(400).json({ success: false, message: 'user not authenticated.' });
+
     }
 
-    // Attach decoded user info to the request object
-    req.user = decoded;
+if(tokenVerified.role !== "admin" ){
+  return res.status(400).json({ success: false, message: 'user not authenticated.' });
 
-    // Proceed to the next middleware or route handler
+}
+    // Attach decoded user info to request
+    req.user = tokenVerified;
+
     next();
   } catch (error) {
     return res.status(401).json({ success: false, message: 'Token is not valid or has expired.' });

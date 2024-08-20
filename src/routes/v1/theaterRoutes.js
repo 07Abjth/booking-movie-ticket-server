@@ -1,23 +1,15 @@
 import express from 'express';
-import { createTheater, getTheaters, getTheaterById, updateTheater, deleteTheater } from '../../controllers/theaterControllers.js';
-
-
+import { getTheaters, getTheaterById, getTheatersByLocation } from '../../controllers/theaterControllers.js';
 
 const router = express.Router();
 
-// Route to create a new theater
-router.post('/create', createTheater);
-
-// Route to get all theaters
-router.get('/get-theater', getTheaters);
+// Route to get all theaters or filter by location
+router.get('/get-theaters', getTheaters);
 
 // Route to get a specific theater by ID
 router.get('/get-theater-byId/:id', getTheaterById);
 
-// Route to update a theater by ID
-router.put('/update-theater/:id', updateTheater);
-
-// Route to delete a specific theater by ID
-router.delete('/delete/:id', deleteTheater);
+// Route to get theaters by location
+router.get('/get-theaters-by-location/:location', getTheatersByLocation);
 
 export default router;

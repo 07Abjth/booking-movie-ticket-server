@@ -21,8 +21,8 @@ const theaterOwnerSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['TheaterOwner'],
-    default: 'TheaterOwner'
+    enum: ['theater-owner'], // Enum values
+    default: 'theater-owner' // Default value
   },
   phoneNumber: {
     type: String,
@@ -33,7 +33,7 @@ const theaterOwnerSchema = new mongoose.Schema({
   address: {
     type: String,
     maxlength: 200
-  },
+  }
 }, { timestamps: true });
 
 export default mongoose.model('TheaterOwner', theaterOwnerSchema);

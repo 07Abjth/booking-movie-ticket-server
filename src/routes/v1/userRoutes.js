@@ -6,8 +6,7 @@ import {
     checkUser,
     deleteUser
 } from '../../controllers/userControllers.js';
-  
-    import { authUser } from '../../middleware/authUser.js';
+import { authUser } from '../../middleware/authUser.js';
 
 
 
@@ -18,7 +17,7 @@ router.post('/register',registerUser)
 router.post('/login',loginUser)
 router.get('/profile/:id', authUser,updateUserProfile);
 router.get('/check-user/', authUser, checkUser);
-router.delete('/delete/:id', deleteUser);
+router.delete('/delete/:id', authUser, deleteUser);
 
 
 

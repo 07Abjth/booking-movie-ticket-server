@@ -3,8 +3,9 @@ import jwt from 'jsonwebtoken';
 export const authTheaterOwner = (req, res, next) => {
   try {
     // Extract the token from cookies
-    const token = req.cookies.token || '';
+    const token = req.cookies.token;
 
+    // Check if token is missing
     if (!token) {
       return res.status(401).json({ success: false, message: 'No token provided, authorization denied.' });
     }
@@ -15,16 +16,18 @@ export const authTheaterOwner = (req, res, next) => {
     // Log the decoded token (for debugging purposes)
     console.log(decoded);
 
-    // Check if the user has the theaterOwner role
-    if (decoded.role !== 'theaterOwner') {
-      return res.status(403).json({ success: false, message: 'Access denied. Theater owners only.' });
+    // Check if the user role is 'theater-owner' or 'admin'
+    if (decoded.role !== 'theater-owner' && decoded.role !== 'admin'){
+      return res.status(403).json({ success: false, message: 'Forbidden: Access is denied.' });
     }
 
-    // Attach decoded user info to request
+    // Attach decoded user info to the request object
     req.user = decoded;
 
+    // Proceed to the next middleware or route handler
     next();
   } catch (error) {
+    // Return error for invalid or expired tokens
     return res.status(401).json({ success: false, message: 'Token is not valid or has expired.' });
   }
 };
