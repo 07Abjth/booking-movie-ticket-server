@@ -1,23 +1,21 @@
 import express from 'express';
-import {
-  getShows,
-  getShowById,
-  getShowsByMovie,
-  getShowsByTheater,
-} from '../../controllers/showControllers.js';
+import { authTheaterOwner } from '../../middleware/authTheaterOwner.js';
+import { createShow, updateShow, deleteShow, getAllShows } from '../../controllers/showControllers.js';
 
 const router = express.Router();
 
-// Route to get all shows
-router.get('/', getShows);
+// Showtime Management Routes
 
-// Route to get a specific show by ID
-router.get('/:id', getShowById);
+// Route for theater owners and admins to create a show
+router.post('/create', authTheaterOwner, createShow);
 
-// Route to get shows for a specific movie
-router.get('/movie/:movieId', getShowsByMovie);
+// Route for theater owners and admins to update a show
+router.put('/update/:id', authTheaterOwner, updateShow);
 
-// Route to get shows for a specific theater
-router.get('/theater/:theaterId', getShowsByTheater);
+// Route for theater owners and admins to delete a show
+router.delete('/delete/:id', authTheaterOwner, deleteShow);
+
+// Route to get all shows (open to all)
+router.get('/all-show', getAllShows);
 
 export default router;

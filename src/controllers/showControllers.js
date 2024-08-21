@@ -1,77 +1,61 @@
 import Show from '../models/showModel.js';
+import Theater from '../models/theaterModel.js';
+import Movie from '../models/movieModel.js';
 
-// Get all shows
-export const getShows = async (req, res) => {
-  try {
-    const shows = await Show.find().populate('movie').populate('theater');
-    res.status(200).json({ success: true, data: shows });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// Get a specific show by ID
-export const getShowById = async (req, res) => {
-  try {
-    const show = await Show.findById(req.params.id).populate('movie').populate('theater');
-    if (show) {
-      res.status(200).json({ success: true, data: show });
-    } else {
-      res.status(404).json({ success: false, message: 'Show not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// Get shows for a specific movie
-export const getShowsByMovie = async (req, res) => {
-  try {
-    const shows = await Show.find({ movie: req.params.movieId }).populate('theater');
-    res.status(200).json({ success: true, data: shows });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// Get shows for a specific theater
-export const getShowsByTheater = async (req, res) => {
-  try {
-    const shows = await Show.find({ theater: req.params.theaterId }).populate('movie');
-    res.status(200).json({ success: true, data: shows });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// Create a new show
 export const createShow = async (req, res) => {
   try {
-    const { movie, theater, showTime, price } = req.body;
+    const { movieId, theaterId, showTime, price } = req.body;
 
-    // Validate input fields
-    if (!movie || !theater || !showTime || !price) {
+    // Validate required fields
+    if (!movieId || !theaterId || !showTime || !price) {
       return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
-    // Create and save the new show
-    const newShow = new Show({ movie, theater, showTime, price });
-    await newShow.save();
+    // Check if the user is a theater owner or admin
+    const userRole = req.user.role;
 
-    res.status(201).json({ success: true, message: 'Show created successfully', data: newShow });
+    // If Theater Owner, ensure they own the theater
+    if (userRole === 'theater_owner') {
+      const theater = await Theater.findById(theaterId);
+      if (!theater || theater.ownerId.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ success: false, message: 'Unauthorized: You do not own this theater.' });
+      }
+    }
+
+    // If Admin, no ownership check is necessary
+    if (userRole === 'admin') {
+      // Admins bypass theater ownership check, can create shows for any theater
+    }
+
+    // Check if the movie exists
+    const movie = await Movie.findById(movieId);
+    if (!movie) {
+      return res.status(404).json({ success: false, message: 'Movie not found' });
+    }
+
+    // Create the new show
+    const newShow = await Show.create({
+      movie: movieId,
+      theater: theaterId,
+      showTime,
+      price
+    });
+
+    return res.status(201).json({ success: true, message: 'Show created successfully', show: newShow });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
 
-// Update an existing show
 export const updateShow = async (req, res) => {
   try {
-    const { movie, theater, showTime, price } = req.body;
+    const { id } = req.params;
+    const { showTime, price } = req.body;
 
     const updatedShow = await Show.findByIdAndUpdate(
-      req.params.id,
-      { movie, theater, showTime, price },
+      id,
+      { showTime, price },
       { new: true }
     );
 
@@ -79,24 +63,36 @@ export const updateShow = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Show not found' });
     }
 
-    res.status(200).json({ success: true, data: updatedShow });
+    return res.status(200).json({ success: true, message: 'Show updated successfully', show: updatedShow });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
 
-
-// Delete a show
 export const deleteShow = async (req, res) => {
   try {
-    const deletedShow = await Show.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
 
-    if (!deletedShow) {
+    const show = await Show.findByIdAndDelete(id);
+
+    if (!show) {
       return res.status(404).json({ success: false, message: 'Show not found' });
     }
 
-    res.status(200).json({ success: true, message: 'Show deleted successfully' });
+    return res.status(200).json({ success: true, message: 'Show deleted successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+export const getAllShows = async (req, res) => {
+  try {
+    const shows = await Show.find().populate('movie').populate('theater');
+    return res.status(200).json({ success: true, shows });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };

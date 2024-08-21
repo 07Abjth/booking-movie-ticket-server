@@ -48,7 +48,7 @@ router.delete('/theaters/:id', authAdmin, deleteTheater);
 
 // Show management routes
 router.get('/shows', getShows);
-router.post('/shows', authAdmin, createShow);  // Protect show creation
+router.post('/shows/create', authAdmin, createShow);  // Protect show creation
 
 // Protected routes (require admin authentication)
 router.put('/shows/:id', authAdmin, updateShow);
