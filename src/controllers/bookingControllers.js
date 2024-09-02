@@ -1,6 +1,6 @@
 import Booking from '../models/bookingModel.js';
-import Show from '../models/showModel.js'; // Ensure the path is correct
 import Seat from '../models/seatModel.js';
+import mongoose from 'mongoose';
 
 // Create a new booking
 export const createBooking = async (req, res) => {
@@ -21,15 +21,44 @@ export const createBooking = async (req, res) => {
     await Seat.updateMany({ _id: { $in: seats } }, { status: 'reserved' });
 
     res.status(201).json(booking);
+    console.log('Creating booking with user ID:', userId);
+
+
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// Get all bookings for the authenticated user
+// Get all bookings for the authenticated user (Authenticated User)
 export const getUserBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ user: req.user._id }).populate('show').populate('seats');
+    const { id } = req.params;
+    console.log('Requested userId:', id);
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid user ID format.' });
+    }
+
+    const bookings = await Booking.find({ user: id })
+                                  .populate('show', 'movie theater showTime price') // Adjust as needed
+                                  .populate('seats', 'seatNumber status price') // Adjust as needed
+                                  .select('user show seats totalPrice paymentStatus'); // Adjust as needed
+
+    if (bookings.length === 0) {
+      return res.status(404).json({ message: 'No bookings found for this user.' });
+    }
+
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+//Get all bookings of all users(Admin role)
+export const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({}).populate('user').populate('show').populate('seats');
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: error.message });

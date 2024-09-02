@@ -1,4 +1,6 @@
+
 import mongoose from 'mongoose';
+
 
 const movieSchema = new mongoose.Schema(
   {
@@ -11,11 +13,15 @@ const movieSchema = new mongoose.Schema(
     director: { type: String, required: true, minlength: 2, maxlength: 100 },
     cast: [{ type: String, maxlength: 100 }], // Array of cast members' names
     image: { type: String, maxlength: 200 }, // URL to the movie poster image
-    ratings: {
+    avgRating: {
       type: Number,
       min: 0,
       max: 10,
-      default: 0, // Rating out of 10
+      default: 0, // Average rating out of 10
+    },
+    totalRatings: {
+      type: Number,
+      default: 0, // Total number of ratings received
     },
   },
   {
@@ -24,15 +30,3 @@ const movieSchema = new mongoose.Schema(
 );
 
 export default mongoose.model('Movie', movieSchema);
-
-
-
-
-
-    // image:{
-    //     type:String, 
-    //     default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqHjPX-GKYEX9yXi4ySoXIjTKiX2xBMrfwbQ&s"
-    // },
-
-
-

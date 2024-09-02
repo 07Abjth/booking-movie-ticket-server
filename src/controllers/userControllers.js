@@ -26,7 +26,7 @@ export const registerUser = async (req, res) => {
     const user = new User({ name, email, password: hashedPassword, phoneNumber });
     await user.save();
 
-    // Send response without generating a token
+    // Send response 
     return res.status(201).json({
       success: true,
       message: "User created successfully",
@@ -119,45 +119,90 @@ export const loginUser = async (req, res) => {
       }
     };
     
-
-
-    // Check if a user exists by email or ID
-    export const checkUser = async (req, res, next) => {
+//User Profile
+    export const userProfile = async (req,res)=>{
       try {
-        const users = req.user;
+        const user = req.user;
 
-        if(!users){
-          return res.status(400).json({success:true, message:"user not authenticated"})
-        }
+const useData = await User.find({email:user.email}).select("-password")
+res.json({ success: true, message: "User data fetched successfully", data: useData });
 
-        res.json({success:true, message:""})
-        const { email, id } = req.query;    
-    
-        if (!users) {
-          return res.status(404).json({ success: false, message: "User not found" });
-        }
-  
-        return res.status(200).json({ success: true, data: user });
-      } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
-      }
-    };
-    
+ 
+    // Check if user was found
+    if (!userData) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
-    //Delete user
+    // Send back user data (excluding sensitive information)
+    return res.json({ success: true, message: "User data fetched successfully", data: userData });
+    
+  } catch (error) {
+    // Handle any errors
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+   // Check if a user exists by email or ID
+export const checkUser = async (req, res, next) => {
+  try {
+    const { email, id } = req.query;
+
+    // Check if user is authenticated (assuming req.user is set in authentication middleware)
+    if (!req.user) {
+      return res.status(400).json({ success: false, message: "User not authenticated" });
+    }
+
+    // Search for user by email or ID
+    let user;
+    if (email) {
+      user = await User.findOne({ email });
+    } else if (id) {
+      user = await User.findById(id);
+    }
+
+    // If no user is found, return an error
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // If user is found, return success with user data
+    return res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Delete user by ID
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    return res.status(200).json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 
-    export const deleteUser = async (req, res) => {
-      try {
-        const user = await User.findByIdAndDelete(req.params.id);
-        if (!user) {
-          return res.status(404).json({ success: false, message: 'User not found' });
-        }
-        return res.status(200).json({ success: true, message: 'User deleted successfully' });
-      } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
-      }
-    };
-    
-    
-    
+// Log out a user
+export const logoutUser = (req, res) => {
+  try {
+    // Clear the token cookie
+    res.cookie('token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Secure flag for HTTPS
+      sameSite: 'strict', // SameSite attribute to prevent CSRF
+      expires: new Date(0) // Set cookie expiry to the past to delete it
+    });
+
+    // Send a response indicating successful logout
+    res.json({ success: true, message: "User logged out successfully" });
+  } catch (error) {
+    // Handle any errors
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

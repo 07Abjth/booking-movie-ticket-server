@@ -4,7 +4,7 @@ import apiRouter from './routes/index.js';
 import serverConfig from './config/serverConfig.js';
 import { dbConnect } from './config/dbConfig.js';
 import cookieParser from 'cookie-parser'
-
+import cors from 'cors'
 
 dotenv.config(); // Load environment variables
 
@@ -13,6 +13,11 @@ const app = express();
 // Basic middleware
 app.use(express.json()); // Parse JSON bodies
 app.use(cookieParser());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials:true,
+
+}))
 
 // Test route
 app.get('/', (req, res) => {

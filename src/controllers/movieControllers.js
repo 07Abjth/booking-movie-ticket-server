@@ -58,19 +58,18 @@ export const getAllMovies = async (req, res) => {
 
 
 
+// Create a new movie
 export const createMovie = async (req, res) => {
   try {
-    const { title, description, releaseDate, duration, language, genre, director, cast, ratings } = req.body;
+    const { title, description, releaseDate, duration, language, genre, director, cast } = req.body;
 
-    // Ensure all fields are received
     console.log('Request Body:', req.body);
     console.log('Request File:', req.file);
 
+    const isMovie = await Movie.findOne({ title: title });
 
-    const isMovie = await Movie.findOne({title:title})
-
-    if(isMovie){
-      return res.status(400).json({message:"Movie already exist"})
+    if (isMovie) {
+      return res.status(400).json({ message: 'Movie already exists' });
     }
 
     // Check if file was uploaded
@@ -79,9 +78,8 @@ export const createMovie = async (req, res) => {
     }
 
     // Upload file to Cloudinary
-    const result = await cloudinaryInstance.uploader.upload(req.file.path).catch((error)=>{
-console.log(error);
-
+    const result = await cloudinaryInstance.uploader.upload(req.file.path).catch((error) => {
+      console.log(error);
     });
 
     // Create new movie object
@@ -94,14 +92,13 @@ console.log(error);
       genre,
       director,
       cast,
-      ratings,
       image: result.url  // Use 'result' to access the uploaded file URL
     };
 
     console.log('New Movie Object:', newMovie);
 
     // Check for missing fields
-    if (!title || !description || !releaseDate || !duration || !language || !genre || !director || !cast || !ratings) {
+    if (!title || !description || !releaseDate || !duration || !language || !genre || !director || !cast) {
       return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
@@ -116,10 +113,7 @@ console.log(error);
   }
 };
 
-
-
-//get movie by id
-
+// Get movie by ID
 export const getMovieById = async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.id);
@@ -132,12 +126,10 @@ export const getMovieById = async (req, res) => {
   }
 };
 
-
-
-//Update movie
+// Update movie
 export const updateMovie = async (req, res) => {
   try {
-    const movie = await Movie.findByIdAndUpdate(req.params.id);
+    const movie = await Movie.findById(req.params.id);
     if (!movie) {
       return res.status(404).json({ success: false, message: 'Movie not found' });
     }
@@ -157,7 +149,7 @@ export const updateMovie = async (req, res) => {
   }
 };
 
-//Delete movie
+// Delete movie
 export const deleteMovie = async (req, res) => {
   try {
     const movie = await Movie.findByIdAndDelete(req.params.id);
@@ -170,8 +162,7 @@ export const deleteMovie = async (req, res) => {
   }
 };
 
-//search movie
-
+// Search movies
 export const searchMovies = async (req, res) => {
   try {
     const { query } = req.body;

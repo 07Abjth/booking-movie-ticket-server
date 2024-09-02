@@ -1,13 +1,19 @@
 import express from 'express';
-import { getSeatsByShow, reserveSeats } from '../../controllers/seatControllers.js';
-import { authUser } from '../../middleware/authUser.js'; // Assuming you have an authUser middleware for authentication
+import { getSeatsByShow, reserveSeats, createSeats, deleteSeats } from '../../controllers/seatControllers.js';
+import { authTheaterOwner } from '../../middleware/authTheaterOwner.js'; // Correctly importing the named export
 
 const router = express.Router();
 
-// Route to get available seats for a specific show
+// Route to get available seats for a specific show (open to all authenticated users)
 router.get('/show/:showId', getSeatsByShow);
 
-// Route to reserve seats (protected route)
-router.post('/reserve', authUser, reserveSeats);
+// Route to reserve seats (protected route for authenticated users)
+router.post('/reserve', authTheaterOwner, reserveSeats);
+
+// Route to create seats (protected route for Theater Owners only)
+router.post('/create', authTheaterOwner, createSeats);
+
+// Route to delete seats (protected route for Theater Owners only)
+router.delete('/delete', authTheaterOwner, deleteSeats);
 
 export default router;
