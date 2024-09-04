@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json()); // Parse JSON bodies
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://booking-movie-ticket-client.vercel.app/',
   credentials:true,
 
 }))
