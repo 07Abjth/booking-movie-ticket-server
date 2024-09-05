@@ -6,6 +6,9 @@ import {
   updateMovie,
   deleteMovie,
   searchMovies,
+  getUpcomingMovies,     
+  getTrendingMovies,     
+  getNewReleases         
 } from '../../controllers/movieControllers.js';
 import { authAdmin } from '../../middleware/authAdmin.js';
 import { upload } from '../../middleware/uploadMiddleware.js';
@@ -13,14 +16,17 @@ import { authUser } from '../../middleware/authUser.js';
 
 const router = express.Router();
 
-// Corrected routes and HTTP methods
-router.post('/create-movie', upload.single("poster"),createMovie);
-router.get('/moviesList', getAllMovies);            
-// router.get('/details', authUser, getMoviesDetails);            
+// Routes
+router.post('/create-movie', upload.single("poster"), authAdmin, createMovie);   // Only admins can create movies
+router.get('/moviesList', getAllMovies);                                         // List all movies
+router.get('/getMovie/:id', authUser, getMovieById);                             // Get movie by ID (requires user authentication)
+router.put('/update/:id', authAdmin, updateMovie);                               // Update movie (admin only)
+router.delete('/delete/:id', authAdmin, deleteMovie);                            // Delete movie (admin only)
 
-router.get('/search', searchMovies);             
-router.get('/getMovie/:id', authUser, getMovieById);                 
-router.put('update/:id',authUser, updateMovie);                  
-router.delete('delete/:id',authAdmin, deleteMovie);               
+// Additional routes for specific movie categories
+router.get('/search', searchMovies);                                             // Search movies
+router.get('/upcoming', getUpcomingMovies);                                      // Get upcoming movies
+router.get('/trending', getTrendingMovies);                                      // Get trending movies
+router.get('/new-releases', getNewReleases);                                     // Get new release movies
 
 export default router;

@@ -124,7 +124,7 @@ export const loginUser = async (req, res) => {
       try {
         const user = req.user;
 
-const useData = await User.find({email:user.email}).select("-password")
+const useData = await User.findOne({email:user.Id}).select("-password")
 res.json({ success: true, message: "User data fetched successfully", data: useData });
 
  

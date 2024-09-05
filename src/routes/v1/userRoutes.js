@@ -19,7 +19,7 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 
 // Get the profile of the authenticated user
-router.get('/profile/:id', authUser, userProfile);
+router.get('/profile', authUser, userProfile);
 
 // Update the profile of the authenticated user
 router.put('/profile/:id', authUser, updateUserProfile);
