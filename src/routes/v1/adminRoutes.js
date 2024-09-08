@@ -14,10 +14,10 @@ const router = express.Router();
 
 
 //Create admin
-router.post('/create-admin', createAdmin);
+router.post('/create', createAdmin);
 
 //LoginAdmin
-router.post('/login-admin', loginAdmin);
+router.post('/login', loginAdmin);
 
 //check admin
 router.get('/check-admin', checkAdmin)

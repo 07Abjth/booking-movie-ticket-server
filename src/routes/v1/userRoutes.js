@@ -18,6 +18,10 @@ router.post('/register', registerUser);
 // User login
 router.post('/login', loginUser);
 
+
+// Check if a user exists by email or ID
+router.get('/check-user', authUser, checkUser);
+
 // Get the profile of the authenticated user
 router.get('/profile', authUser, userProfile);
 
@@ -27,8 +31,6 @@ router.put('/profile/:id', authUser, updateUserProfile);
 // Delete a user by ID
 router.delete('/delete/:id', authUser, deleteUser);
 
-// Check if a user exists by email or ID
-router.get('/check-user/', authUser, checkUser);
 
 // Logout a user
 router.post('/logout', authUser, logoutUser);

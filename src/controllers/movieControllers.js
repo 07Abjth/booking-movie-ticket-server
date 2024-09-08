@@ -112,6 +112,28 @@ export const getMovieById = async (req, res) => {
   }
 };
 
+ 
+// Get movie details by ID
+export const getMovieDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the movie by ID
+    const movie = await Movie.findById(id);
+
+    // Check if the movie was found
+    if (!movie) {
+      return res.status(404).json({ success: false, message: "Movie not found" });
+    }
+
+    // Return movie details
+    return res.status(200).json({ success: true, data: movie });
+  } catch (error) {
+    console.error("Error fetching movie details:", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 
 // Update movie
 export const updateMovie = async (req, res) => {

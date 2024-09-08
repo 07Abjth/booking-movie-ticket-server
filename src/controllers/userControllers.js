@@ -2,14 +2,20 @@ import User from '../models/userModel.js';
 import bcrypt from 'bcrypt';
 import generateToken from '../utils/generateToken.js';
 
+
 // Register a new user
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, phoneNumber } = req.body;
+    const { name, email, phoneNumber, password, confirmPassword,  } = req.body;
 
     // Check if all fields are provided
-    if (!name || !email || !password || !phoneNumber) {
+    if (!name || !email || !phoneNumber  || !password || !confirmPassword ) {
       return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      return res.status(400).json({ success: false, message: "Passwords do not match" });
     }
 
     // Check if user already exists
@@ -19,14 +25,14 @@ export const registerUser = async (req, res) => {
     }
 
     // Hash the password
-    const salt = 10;
-    const hashedPassword = bcrypt.hashSync(password, salt);
+    const salt = await bcrypt.genSalt(10); // Use async method for better performance
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create a new user
     const user = new User({ name, email, password: hashedPassword, phoneNumber });
     await user.save();
 
-    // Send response 
+    // Send response
     return res.status(201).json({
       success: true,
       message: "User created successfully",
@@ -36,7 +42,7 @@ export const registerUser = async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(400).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
@@ -142,22 +148,26 @@ res.json({ success: true, message: "User data fetched successfully", data: useDa
   }
 };
 
-   // Check if a user exists by email or ID
+
+// Check if a user exist
 export const checkUser = async (req, res, next) => {
   try {
+    // Ensure req.user is populated by your authentication middleware
     const { email, id } = req.query;
 
-    // Check if user is authenticated (assuming req.user is set in authentication middleware)
+    // Check if user is authenticated
     if (!req.user) {
-      return res.status(400).json({ success: false, message: "User not authenticated" });
+      return res.status(401).json({ success: false, message: "User not authenticated" });
     }
 
-    // Search for user by email or ID
+    // Find user either by email or id, or use req.user
     let user;
     if (email) {
       user = await User.findOne({ email });
     } else if (id) {
       user = await User.findById(id);
+    } else {
+      user = req.user; // If no query params, use the authenticated user
     }
 
     // If no user is found, return an error
@@ -165,12 +175,21 @@ export const checkUser = async (req, res, next) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    // If user is found, return success with user data
-    return res.status(200).json({ success: true, data: user });
+    // Return user details without sensitive information
+    const userData = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      // add other necessary fields, excluding sensitive ones like password
+    };
+
+    return res.status(200).json({ success: true, data: userData });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // Delete user by ID
 export const deleteUser = async (req, res) => {
