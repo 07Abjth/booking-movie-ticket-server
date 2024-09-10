@@ -55,41 +55,46 @@ export const loginUser = async (req, res) => {
 
     // Validate input fields
     if (!email || !password) {
-      return res.status(400).json({ success: false, message: "All fields required." });
+      return res.status(400).json({ success: false, message: "Email and password are required." });
     }
 
     // Find the user by email
-    const userExist = await User.findOne({ email });
-    if (!userExist) {
-      return res.status(404).json({ success: false, message: 'User does not exist' });
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User does not exist.' });
     }
 
     // Compare provided password with stored hashed password
-    const passwordMatch = bcrypt.compareSync(password, userExist.password);
-    if (!passwordMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid password' });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ success: false, message: 'Invalid email or password.' });
     }
 
     // Generate a JWT token
-    const token = generateToken(userExist._id, userExist.role);
+    const token = generateToken(user._id, user.role);
 
-    // Set the token in a cookie with security settings
+    // Set the token in an HTTP-only cookie with security settings
     res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Secure flag for HTTPS
-      sameSite: 'strict', // SameSite attribute to prevent CSRF
+      httpOnly: true, // Prevent access via JavaScript
+      secure: process.env.NODE_ENV === 'production', // Use secure flag in production
+      sameSite: 'strict', // Prevent CSRF attacks
+      maxAge: 24 * 60 * 60 * 1000 // Token expires in 24 hours
     });
 
-    // Send response
-    res.json({ success: true, message: "User logged in successfully", token });
+    // Send success response
+    res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      token
+    });
 
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error('Login Error:', error); // Log the actual error for debugging
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
-
-
-
 
     // Update user details
     export const updateUserProfile = async (req, res, next) => {
@@ -126,31 +131,27 @@ export const loginUser = async (req, res) => {
     };
     
 //User Profile
-    export const userProfile = async (req,res)=>{
-      try {
-        const user = req.user;
-
-const useData = await User.findOne({email:user.Id}).select("-password")
-res.json({ success: true, message: "User data fetched successfully", data: useData });
-
+ export const userProfile = async (req, res) => {
  
-    // Check if user was found
+  try {
+    const user = req.user;
+    const userData = await User.findOne({ email: user.id }).select("-password");
+
     if (!userData) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    // Send back user data (excluding sensitive information)
     return res.json({ success: true, message: "User data fetched successfully", data: userData });
-    
   } catch (error) {
-    // Handle any errors
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
 
-// Check if a user exist
-export const checkUser = async (req, res, next) => {
+
+
+ //check user
+ export const checkUser = async (req, res) => {
   try {
     // Ensure req.user is populated by your authentication middleware
     const { email, id } = req.query;
@@ -167,7 +168,7 @@ export const checkUser = async (req, res, next) => {
     } else if (id) {
       user = await User.findById(id);
     } else {
-      user = req.user; // If no query params, use the authenticated user
+      user = await User.findById(req.user.id); // Assuming req.user.id is available
     }
 
     // If no user is found, return an error
@@ -189,7 +190,6 @@ export const checkUser = async (req, res, next) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 // Delete user by ID
 export const deleteUser = async (req, res) => {

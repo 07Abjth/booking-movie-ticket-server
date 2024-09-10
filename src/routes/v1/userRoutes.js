@@ -26,7 +26,7 @@ router.get('/check-user', authUser, checkUser);
 router.get('/profile', authUser, userProfile);
 
 // Update the profile of the authenticated user
-router.put('/profile/:id', authUser, updateUserProfile);
+router.put('/update/:id', authUser, updateUserProfile);
 
 // Delete a user by ID
 router.delete('/delete/:id', authUser, deleteUser);
