@@ -21,7 +21,7 @@ export const createAdmin = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10); // Hash the provided password
 
-    const admin = new Admin({ name, email, password: hashedPassword, phoneNumber, role: 'admin' });
+    const admin = new Admin({ name, email, password: hashedPassword, phoneNumber});
 await admin.save();
 
 

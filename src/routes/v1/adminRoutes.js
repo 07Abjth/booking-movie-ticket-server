@@ -1,7 +1,7 @@
 import express from 'express';
 import {createMovie,updateMovie,deleteMovie,} from '../../controllers/movieControllers.js';
 import {createAdmin,loginAdmin,getUsers,getUserById,updateUser,deleteUser, deleteTheaterOwner, checkAdmin} from '../../controllers/adminControllers.js';
-import {createTheater,updateTheater,deleteTheater} from '../../controllers/theaterOwnerControllers.js';
+import {createTheater,updateTheater,deleteTheater} from '../../controllers/theaterControllers.js';
 import {createShow,updateShow,deleteShow,} from '../../controllers/showControllers.js';
 import { updateTheaterOwnerProfile } from '../../controllers/theaterOwnerControllers.js';
 

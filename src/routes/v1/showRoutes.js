@@ -1,5 +1,5 @@
 import express from 'express';
-import { authTheaterOwner } from '../../middleware/authTheaterOwner.js';
+import { authTheaterOwnerOrAdmin } from '../../middleware/authTheaterOwnerOrAdmin.js'; // Updated middleware to include both roles
 import { createShow, updateShow, deleteShow, getAllShows } from '../../controllers/showControllers.js';
 
 const router = express.Router();
@@ -7,15 +7,15 @@ const router = express.Router();
 // Showtime Management Routes
 
 // Route for theater owners and admins to create a show
-router.post('/create', authTheaterOwner, createShow);
+router.post('/', authTheaterOwnerOrAdmin, createShow);
 
 // Route for theater owners and admins to update a show
-router.put('/update/:id', authTheaterOwner, updateShow);
+router.put('/:id', authTheaterOwnerOrAdmin, updateShow);
 
 // Route for theater owners and admins to delete a show
-router.delete('/delete/:id', authTheaterOwner, deleteShow);
+router.delete('/:id', authTheaterOwnerOrAdmin, deleteShow);
 
 // Route to get all shows (open to all)
-router.get('/all-show', getAllShows);
+router.get('/', getAllShows);
 
 export default router;
