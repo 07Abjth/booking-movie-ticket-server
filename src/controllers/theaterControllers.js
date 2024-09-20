@@ -1,4 +1,7 @@
 import Theater from '../models/theaterModel.js';
+import Movie from '../models/movieModel.js';
+import show from '../models/showModel.js'
+
 
 // Get all theaters or filter by location
 export const getTheaters = async (req, res) => {
@@ -51,7 +54,8 @@ export const getTheaters = async (req, res) => {
   }
 };
 
-// Fetch theater details
+
+// Get theater details by ID
 export const getTheaterDetails = async (req, res) => {
   try {
     const { theaterId } = req.query; // Assume theaterId is provided as a query parameter
@@ -149,3 +153,74 @@ export const getTheatersByLocation = async (req, res) => {
 };
 
 
+
+// Add movies to a theater
+export const addMoviesToTheater = async (req, res) => {
+  try {
+    const { theaterId } = req.params;
+    const { movieIds } = req.body;
+
+    // Ensure movieIds is an array and theaterId is valid
+    if (!Array.isArray(movieIds) || movieIds.length === 0) {
+      return res.status(400).json({ success: false, message: 'Valid movieIds array is required' });
+    }
+
+    // Find the theater by ID
+    const theater = await Theater.findById(theaterId);
+    if (!theater) {
+      return res.status(404).json({ success: false, message: 'Theater not found' });
+    }
+
+    // Validate that all movieIds exist
+    const movies = await Movie.find({ _id: { $in: movieIds } });
+    if (movies.length !== movieIds.length) {
+      return res.status(400).json({ success: false, message: 'One or more movies not found' });
+    }
+
+    // Add movies to the theater's movie list
+    theater.movies = [...new Set([...theater.movies, ...movieIds])]; // Avoid duplicates
+    await theater.save();
+
+    res.status(200).json({ success: true, message: 'Movies added to theater successfully', data: theater });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+// Fetch theaters by an array of Theater IDs
+export const getTheatersByIds = async (req, res) => {
+  const { theaterIds } = req.body;  // Extract theater IDs from the request body
+
+  if (!Array.isArray(theaterIds) || theaterIds.length === 0) {
+    return res.status(400).json({ error: 'Invalid input: theaterIds should be a non-empty array.' });
+  }
+
+  try {
+    const theaters = await Theater.find({ _id: { $in: theaterIds } });
+    return res.status(200).json(theaters);
+  } catch (error) {
+    return res.status(500).json({ error: 'An error occurred while fetching theaters.' });
+  }
+};
+
+
+export const getTheatersByMovieId = async (req, res) => {
+  const { movieId } = req.params;
+
+  try {
+    // Fetch shows associated with the movieId
+    const shows = await Show.find({ movie: movieId }).select('theater');
+
+    // Extract unique theater IDs from shows
+    const theaterIds = [...new Set(shows.map(show => show.theater))];
+
+    // Fetch theaters based on the extracted IDs
+    const theaters = await Theater.find({ _id: { $in: theaterIds } });
+
+    res.status(200).json(theaters);
+  } catch (error) {
+    console.error('Error fetching theaters:', error);
+    res.status(500).json({ message: 'Error fetching theaters' });
+  }
+};

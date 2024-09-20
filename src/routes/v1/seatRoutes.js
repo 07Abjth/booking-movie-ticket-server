@@ -1,6 +1,6 @@
 import express from 'express';
 import { getSeatsByShow, reserveSeats, createSeats, deleteSeats } from '../../controllers/seatControllers.js';
-import { authTheaterOwner } from '../../middleware/authTheaterOwner.js'; // Correctly importing the named export
+import { authTheaterOwner } from '../../middleware/authTheaterOwner.js';
 
 const router = express.Router();
 

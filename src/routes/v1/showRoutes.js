@@ -1,21 +1,41 @@
 import express from 'express';
-import { authTheaterOwnerOrAdmin } from '../../middleware/authTheaterOwnerOrAdmin.js'; // Updated middleware to include both roles
-import { createShow, updateShow, deleteShow, getAllShows } from '../../controllers/showControllers.js';
+import { authTheaterOwnerOrAdmin } from '../../middleware/authTheaterOwnerOrAdmin.js';
+import { authAdmin } from '../../middleware/authAdmin.js';
+import {
+  createShow,
+  updateShow,
+  deleteShow,
+  getShowDetailsById,
+  createMultipleShows,
+  getShowsByMovieId
+  // getTheaterShowTimesForMovieId
+} from '../../controllers/showControllers.js';
 
 const router = express.Router();
 
-// Showtime Management Routes
+// Theater owners and admins can create a show
+router.post('/create-show', authTheaterOwnerOrAdmin, createShow);
 
-// Route for theater owners and admins to create a show
-router.post('/', authTheaterOwnerOrAdmin, createShow);
+// Theater owners and admins can update a show
+router.put('/update-show/:id', authTheaterOwnerOrAdmin, updateShow);
 
-// Route for theater owners and admins to update a show
-router.put('/:id', authTheaterOwnerOrAdmin, updateShow);
-
-// Route for theater owners and admins to delete a show
+// Theater owners and admins can delete a show
 router.delete('/:id', authTheaterOwnerOrAdmin, deleteShow);
 
-// Route to get all shows (open to all)
-router.get('/', getAllShows);
+// Route to get show details by ID (open to all)
+router.get('/show-details/:id', getShowDetailsById);
+
+// Route for creating multiple shows
+router.post('/create-multiple-shows', authAdmin, createMultipleShows);
+
+// Route to get shows by movie ID
+router.get('/movies/:movieId', getShowsByMovieId);
+
+
+// router.get('/movies/:movieId', getTheaterShowTimesForMovieId);
+
+
+
+
 
 export default router;
