@@ -1,5 +1,5 @@
 import express from 'express';
-import { getSeatsByShow, reserveSeats, createSeats, deleteSeats } from '../../controllers/seatControllers.js';
+import { getSeatsByShow, reserveSeats, createSeats, deleteSeats, getSeatsByShowId } from '../../controllers/seatControllers.js';
 import { authTheaterOwner } from '../../middleware/authTheaterOwner.js';
 
 const router = express.Router();
@@ -15,5 +15,10 @@ router.post('/create', authTheaterOwner, createSeats);
 
 // Route to delete seats (protected route for Theater Owners only)
 router.delete('/delete', authTheaterOwner, deleteSeats);
+
+
+//GetSeatsByShowId
+router.get('/:showId', getSeatsByShowId);
+
 
 export default router;

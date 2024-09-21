@@ -209,12 +209,13 @@ export const deleteShow = async (req, res) => {
 
 export const getShowsByMovieId = async (req, res) => {
   const { movieId } = req.params;
-  console.log('Fetching shows for movieId:', movieId); // Add this line
+  console.log('Fetching shows for movieId:', movieId); // Debugging log
   try {
     const shows = await Show.find({ movie: movieId });
-    console.log('Shows found:', shows); // Add this line
+    console.log('Shows found:', shows); // Debugging log
     if (!shows.length) {
-      return res.status(404).json({ error: 'No shows found for this movie.' });
+      // Return an empty array instead of a 404 error
+      return res.status(200).json([]); // No shows but not an error
     }
     res.status(200).json(shows);
   } catch (error) {
@@ -222,6 +223,7 @@ export const getShowsByMovieId = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching shows.' });
   }
 };
+
 // export const getTheaterShowTimesForMovieId = async (movieId) => {
 //   try {
 //     const shows = await Show.aggregate([
@@ -240,3 +242,16 @@ export const getShowsByMovieId = async (req, res) => {
 //     throw new Error('Error fetching showtimes');
 //   }
 // };
+
+
+// GetShowTimesByTheaterId
+ 
+export const getShowTimesByTheaterId = async (req, res) => {
+  try {
+    const { theaterId } = req.params;
+    const showTimes = await Show.find({ theaterId }).populate('movieId');
+    res.status(200).json(showTimes);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching showtimes.' });
+  }
+};

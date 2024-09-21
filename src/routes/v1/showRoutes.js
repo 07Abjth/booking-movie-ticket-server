@@ -7,7 +7,8 @@ import {
   deleteShow,
   getShowDetailsById,
   createMultipleShows,
-  getShowsByMovieId
+  getShowsByMovieId,
+  getShowTimesByTheaterId
   // getTheaterShowTimesForMovieId
 } from '../../controllers/showControllers.js';
 
@@ -34,6 +35,7 @@ router.get('/movies/:movieId', getShowsByMovieId);
 
 // router.get('/movies/:movieId', getTheaterShowTimesForMovieId);
 
+router.get('/theater/:theaterId/show-times', getShowTimesByTheaterId);
 
 
 
