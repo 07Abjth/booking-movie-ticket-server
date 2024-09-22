@@ -1,24 +1,29 @@
 import express from 'express';
-import { getSeatsByShow, reserveSeats, createSeats, deleteSeats, getSeatsByShowId } from '../../controllers/seatControllers.js';
+import {    reserveSeats, createSeats, deleteSeats,   fetchSeatLayout } from '../../controllers/seatControllers.js';
 import { authTheaterOwner } from '../../middleware/authTheaterOwner.js';
 
 const router = express.Router();
-
-// Route to get available seats for a specific show (open to all authenticated users)
-router.get('/show/:showId', getSeatsByShow);
+ 
 
 // Route to reserve seats (protected route for authenticated users)
 router.post('/reserve', authTheaterOwner, reserveSeats);
 
 // Route to create seats (protected route for Theater Owners only)
-router.post('/create', authTheaterOwner, createSeats);
+router.post('/create',  createSeats);
 
 // Route to delete seats (protected route for Theater Owners only)
 router.delete('/delete', authTheaterOwner, deleteSeats);
 
+ 
+// // Fetch seats for a specific theater
+// router.get('/theater/:theaterId', getSeatsForTheater);  // Modified to theater
 
-//GetSeatsByShowId
-router.get('/:showId', getSeatsByShowId);
+// // Fetch seat layout for a theater
+// router.get('/layout/theater/:theaterId', getSeatLayout);  // Modified to theater
 
+
+
+// Route to fetch seat layout for a specific theater and show
+router.get('/theater/:theaterId/seats', fetchSeatLayout);
 
 export default router;

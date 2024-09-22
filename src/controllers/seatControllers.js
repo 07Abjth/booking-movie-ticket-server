@@ -1,5 +1,7 @@
 
 import Seat from '../models/seatModel.js';
+import Theater from '../models/theaterModel.js';
+
 
 // Create seats for a show in bulk
 export const createSeats = async (req, res) => {
@@ -27,15 +29,6 @@ export const createSeats = async (req, res) => {
   }
 };
 
-// Get available seats for a specific show
-export const getSeatsByShow = async (req, res) => {
-  try {
-    const seats = await Seat.find({ show: req.params.showId, status: 'available' });
-    res.json({ success: true, data: seats });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
 
 // Reserve seats
 export const reserveSeats = async (req, res) => {
@@ -70,16 +63,83 @@ export const deleteSeats = async (req, res) => {
 };
 
 
-export const getSeatsByShowId = async (req, res) => {
-  const { showId } = req.params;
+ 
+
+// export const getSeatLayout = async (req, res) => {
+//   try {
+//     const { theaterId } = req.params; // Ensure you're using the right parameter
+
+//     if (!theaterId) {
+//       return res.status(400).json({ message: 'Theater ID is required' });
+//     }
+
+//     const theater = await Theater.findById(theaterId).populate('showtimes');
+    
+//     if (!theater) {
+//       return res.status(404).json({ message: 'Theater not found' });
+//     }
+
+//     const seatLayout = theater.screens.find(screen => 
+//       screen.showtimes.some(show => show._id.toString() === req.body.showId)
+//     )?.seatLayout;
+
+//     if (!seatLayout) {
+//       return res.status(404).json({ message: 'Seat layout not found' });
+//     }
+
+//     res.status(200).json(seatLayout);
+//   } catch (error) {
+//     console.error('Error fetching seat layout:', error);
+//     res.status(500).json({ error: 'Error fetching seat layout' });
+//   }
+// };
+
+
+
+ 
+
+export const fetchSeatLayout = async (req, res) => {
+  const { theaterId } = req.params;
+  const { showId } = req.query; // Get showId from query parameters
+
   try {
-    const seats = await Seat.find({ showId });
-    if (!seats.length) {
-      return res.status(404).json({ message: "No seats found for this show." });
+    // Find the theater by ID
+    const theater = await Theater.findById(theaterId).populate('screens.showtimes');
+
+    if (!theater) {
+      return res.status(404).json({ message: 'Theater not found' });
     }
-    res.status(200).json({ data: seats });
+
+    // Find the specific screen associated with the show
+    const screen = theater.screens.find(screen => 
+      screen.showtimes.some(show => show._id.toString() === showId)
+    );
+
+    if (!screen) {
+      return res.status(404).json({ message: 'Screen not found for this show' });
+    }
+
+    // Get the seat layout for the found screen
+    const seatLayout = screen.seatLayout;
+
+    if (!seatLayout) {
+      return res.status(404).json({ message: 'Seat layout not found' });
+    }
+
+    // Fetch the seats for the specific show
+    const seats = await Seat.find({ show: showId }).populate('theater');
+
+    // Combine seat layout with availability
+    const seatLayoutWithAvailability = seatLayout.map(row => {
+      return {
+        row,
+        seats: seats.filter(seat => seat.row === row)
+      };
+    });
+
+    res.status(200).json(seatLayoutWithAvailability);
   } catch (error) {
-    console.error("Error fetching seats:", error);
-    res.status(500).json({ error: "Error fetching seats for this show" });
+    console.error('Error fetching seat layout:', error);
+    res.status(500).json({ error: 'Error fetching seat layout' });
   }
 };
