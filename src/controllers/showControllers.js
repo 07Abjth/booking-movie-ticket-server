@@ -1,6 +1,8 @@
 import Show from '../models/showModel.js';
 import Theater from '../models/theaterModel.js';
 import Movie from '../models/movieModel.js';
+import ShowSeatAvailability from '../models/ShowSeatAvailabilityModel.js';
+
 
 // Create a new show
 export const createShow = async (req, res) => {
@@ -43,7 +45,73 @@ export const createShow = async (req, res) => {
 };
 
 
+
+// // Create availability for seats in a show
+// export const createSeatAvailability = async (req, res) => {
+//   const { showId, seats, price } = req.body; // Expecting an array of seat IDs
   
+//   try {
+//     const availability = seats.map(seat => ({
+//       show: showId,
+//       seat,
+//       status: 'available', // Set initial status
+//       price, // Price for the show
+//     }));
+
+//     await ShowSeatAvailability.insertMany(availability);
+//     return res.status(201).json({ message: 'Seat availability created successfully' });
+//   } catch (error) {
+//     console.error('Error creating seat availability:', error);
+//     return res.status(500).json({ error: 'Failed to create seat availability' });
+//   }
+// };
+
+
+  
+
+// Fetch seat availability for a specific show
+export const fetchSeatAvailability = async (req, res) => {
+  const { showId } = req.params;
+
+  try {
+    const availability = await ShowSeatAvailability.find({ show: showId })
+      .populate('seat') // Optional: populate seat details
+      .exec();
+
+    if (!availability.length) {
+      return res.status(404).json({ error: 'No seat availability found' });
+    }
+
+    return res.json(availability);
+  } catch (error) {
+    console.error('Error fetching seat availability:', error);
+    return res.status(500).json({ error: 'Failed to fetch seat availability' });
+  }
+};
+
+
+
+// Create availability for seats in a show
+export const createSeatAvailability = async (req, res) => {
+  const { showId, seats, price } = req.body; // Expecting an array of seat IDs
+  
+  try {
+    const availability = seats.map(seat => ({
+      show: showId,
+      seat,
+      status: 'available', // Set initial status
+      price, // Price for the show
+    }));
+
+    await ShowSeatAvailability.insertMany(availability);
+    return res.status(201).json({ message: 'Seat availability created successfully' });
+  } catch (error) {
+    console.error('Error creating seat availability:', error);
+    return res.status(500).json({ error: 'Failed to create seat availability' });
+  }
+};
+
+
 //Create multiple shows
 export const createMultipleShows = async (req, res) => {
   try {

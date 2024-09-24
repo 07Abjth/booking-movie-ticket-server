@@ -8,7 +8,9 @@ import {
   getShowDetailsById,
   createMultipleShows,
   getShowsByMovieId,
-  getShowTimesByTheaterId
+  getShowTimesByTheaterId,
+  createSeatAvailability,
+  fetchSeatAvailability
   // getTheaterShowTimesForMovieId
 } from '../../controllers/showControllers.js';
 
@@ -16,6 +18,12 @@ const router = express.Router();
 
 // Theater owners and admins can create a show
 router.post('/create-show', authTheaterOwnerOrAdmin, createShow);
+
+
+router.post('/seats/availability', createSeatAvailability);
+
+router.get('/seats/availability/:showId', fetchSeatAvailability);
+
 
 // Theater owners and admins can update a show
 router.put('/update-show/:id', authTheaterOwnerOrAdmin, updateShow);

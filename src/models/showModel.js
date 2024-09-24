@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
   theater: { type: mongoose.Schema.Types.ObjectId, ref: 'Theater', required: true },
   date: { type: Date, required: true },
   time: { type: String, required: true }, // e.g., '09:00 AM'
-  price: { type: Number, required: true, min: 0 }
 }, { timestamps: true });
 
 // Add an index for faster lookups

@@ -23,29 +23,111 @@ export const createSeats = async (req, res) => {
     }
 
     const createdSeats = await Seat.insertMany(seats);
-    res.status(201).json({ success: true, data: createdSeats });
+   return  res.status(201).json({ success: true, data: createdSeats });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+   return  res.status(400).json({ success: false, message: error.message });
   }
 };
 
+
+
+
+// import Seat from '../models/seatModel.js';
+// import Theater from '../models/theaterModel.js';
+
+// // Create seats for a show in bulk
+// export const createSeats = async (req, res) => {
+//   const { theater, show, seatRows, seatsPerRow, price } = req.body;
+
+//   try {
+//     const seats = [];
+//     for (let row = 0; row < seatRows; row++) {
+//       const rowLabel = String.fromCharCode(65 + row);
+//       for (let seatNumber = 1; seatNumber <= seatsPerRow; seatNumber++) {
+//         seats.push({
+//           theater,
+//           show,
+//           seatNumber: `${rowLabel}${seatNumber}`,
+//           price,
+//         });
+//       }
+//     }
+
+//     await Seat.insertMany(seats);
+//     return res.status(201).json({ message: 'Seats created successfully' });
+//   } catch (error) {
+//     console.error('Error creating seats:', error);
+//     return res.status(500).json({ error: 'Failed to create seats' });
+//   }
+// };
+
+// Get seats for a show
+export const getSeatsForShow = async (req, res) => {
+  const { showId } = req.params;
+  try {
+    const seats = await Seat.find({ show: showId });
+    return res.json({ seats });
+  } catch (error) {
+    console.error('Error fetching seats:', error);
+    return res.status(500).json({ error: 'Failed to fetch seats' });
+  }
+};
 
 // Reserve seats
 export const reserveSeats = async (req, res) => {
   const { seats } = req.body;
 
   try {
-    const availableSeats = await Seat.find({ _id: { $in: seats }, status: 'available' });
-    if (availableSeats.length !== seats.length) {
-      return res.status(400).json({ success: false, message: 'Some seats are unavailable' });
+    const updatedSeats = await Seat.updateMany(
+      { _id: { $in: seats }, status: 'available' },
+      { $set: { status: 'booked' } }
+    );
+
+    if (updatedSeats.nModified === 0) {
+      return res.status(400).json({ error: 'Seats are not available for booking' });
     }
 
-    await Seat.updateMany({ _id: { $in: seats }, status: 'available' }, { status: 'reserved' });
-    res.json({ success: true, message: 'Seats reserved successfully' });
+    return res.json({ message: 'Seats booked successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('Error reserving seats:', error);
+    return res.status(500).json({ error: 'Failed to reserve seats' });
   }
 };
+
+// Fetch seat layout for a specific theater and show
+export const fetchSeatLayout = async (req, res) => {
+  const { theaterId } = req.params;
+  const { showId } = req.query;
+
+  try {
+    const seats = await Seat.find({ theater: theaterId, show: showId });
+    if (!seats) {
+      return res.status(404).json({ error: 'Seats not found' });
+    }
+
+    const layout = createSeatLayout(seats); // A helper function to organize seats by rows
+
+    return res.json({ seats, layout });
+  } catch (error) {
+    console.error('Error fetching seat layout:', error);
+    return res.status(500).json({ error: 'Failed to fetch seat layout' });
+  }
+};
+
+// Helper function to organize seats into rows
+const createSeatLayout = (seats) => {
+  const layout = {};
+
+  seats.forEach((seat) => {
+    const row = seat.seatNumber[0];
+    if (!layout[row]) layout[row] = [];
+    layout[row].push(seat._id);
+  });
+
+  return Object.values(layout);
+};
+
+
 
 // Delete seats
 export const deleteSeats = async (req, res) => {
@@ -63,83 +145,3 @@ export const deleteSeats = async (req, res) => {
 };
 
 
- 
-
-// export const getSeatLayout = async (req, res) => {
-//   try {
-//     const { theaterId } = req.params; // Ensure you're using the right parameter
-
-//     if (!theaterId) {
-//       return res.status(400).json({ message: 'Theater ID is required' });
-//     }
-
-//     const theater = await Theater.findById(theaterId).populate('showtimes');
-    
-//     if (!theater) {
-//       return res.status(404).json({ message: 'Theater not found' });
-//     }
-
-//     const seatLayout = theater.screens.find(screen => 
-//       screen.showtimes.some(show => show._id.toString() === req.body.showId)
-//     )?.seatLayout;
-
-//     if (!seatLayout) {
-//       return res.status(404).json({ message: 'Seat layout not found' });
-//     }
-
-//     res.status(200).json(seatLayout);
-//   } catch (error) {
-//     console.error('Error fetching seat layout:', error);
-//     res.status(500).json({ error: 'Error fetching seat layout' });
-//   }
-// };
-
-
-
- 
-
-export const fetchSeatLayout = async (req, res) => {
-  const { theaterId } = req.params;
-  const { showId } = req.query; // Get showId from query parameters
-
-  try {
-    // Find the theater by ID
-    const theater = await Theater.findById(theaterId).populate('screens.showtimes');
-
-    if (!theater) {
-      return res.status(404).json({ message: 'Theater not found' });
-    }
-
-    // Find the specific screen associated with the show
-    const screen = theater.screens.find(screen => 
-      screen.showtimes.some(show => show._id.toString() === showId)
-    );
-
-    if (!screen) {
-      return res.status(404).json({ message: 'Screen not found for this show' });
-    }
-
-    // Get the seat layout for the found screen
-    const seatLayout = screen.seatLayout;
-
-    if (!seatLayout) {
-      return res.status(404).json({ message: 'Seat layout not found' });
-    }
-
-    // Fetch the seats for the specific show
-    const seats = await Seat.find({ show: showId }).populate('theater');
-
-    // Combine seat layout with availability
-    const seatLayoutWithAvailability = seatLayout.map(row => {
-      return {
-        row,
-        seats: seats.filter(seat => seat.row === row)
-      };
-    });
-
-    res.status(200).json(seatLayoutWithAvailability);
-  } catch (error) {
-    console.error('Error fetching seat layout:', error);
-    res.status(500).json({ error: 'Error fetching seat layout' });
-  }
-};
