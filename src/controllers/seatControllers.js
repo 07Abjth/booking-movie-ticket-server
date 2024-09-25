@@ -66,7 +66,7 @@ export const getSeatsForShow = async (req, res) => {
   const { showId } = req.params;
   try {
     const seats = await Seat.find({ show: showId });
-    return res.json({ seats });
+    res.status(200).json({ success: true, seats });
   } catch (error) {
     console.error('Error fetching seats:', error);
     return res.status(500).json({ error: 'Failed to fetch seats' });

@@ -26,6 +26,10 @@ const seatSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: true,  // Ensures that each seat has a price associated with it
+  },
+  reservationExpiry: {  // Correctly place reservationExpiry here
+    type: Date, // Added to track when the reservation expires
+    default: null, // Null when not reserved
   }
 }, { 
   timestamps: true // Automatically adds `createdAt` and `updatedAt` timestamps
@@ -33,7 +37,5 @@ const seatSchema = new mongoose.Schema({
 
 // Create a compound index to ensure unique seat numbers within the context of a specific theater and show
 seatSchema.index({ theater: 1, show: 1, seatNumber: 1 }, { unique: true });
-
-
 
 export default mongoose.model('Seat', seatSchema);

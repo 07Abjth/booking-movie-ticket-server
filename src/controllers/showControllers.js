@@ -2,6 +2,7 @@ import Show from '../models/showModel.js';
 import Theater from '../models/theaterModel.js';
 import Movie from '../models/movieModel.js';
 import ShowSeatAvailability from '../models/ShowSeatAvailabilityModel.js';
+import Seat  from '../models/seatModel.js'
 
 
 // Create a new show
@@ -112,7 +113,226 @@ export const createSeatAvailability = async (req, res) => {
 };
 
 
-//Create multiple shows
+// //Create multiple shows
+// export const createMultipleShows = async (req, res) => {
+//   try {
+//     const { movieId, theaterId, dates, times, price } = req.body;
+
+//     // Validate input
+//     if (!movieId || !theaterId || !Array.isArray(dates) || !Array.isArray(times) || typeof price !== 'number') {
+//       return res.status(400).json({ success: false, message: 'Invalid input data. Ensure all fields are correct.' });
+//     }
+
+//     // Array to store created shows
+//     const createdShows = [];
+
+
+
+    // // Seat configuration: number of seats per row
+    // const seatConfig = [12, 10, 9, 8, 7, 7, 7, 7, 7, ]; // Total 10 rows
+
+//     // Loop through each date and time combination
+//     for (const date of dates) {
+//       // Ensure date is a valid Date object
+//       const parsedDate = new Date(date);
+//       if (isNaN(parsedDate.getTime())) {
+//         return res.status(400).json({ success: false, message: `Invalid date format: ${date}` });
+//       }
+
+//       for (const time of times) {
+//         // Create each show with the specified movie, theater, date, time, and price
+//         const show = new Show({
+//           movie: movieId,
+//           theater: theaterId,
+//           date: parsedDate,
+//           time, // Time is already a string
+//           price
+//         });
+
+//         // Save the show to the database
+//         try {
+//           const savedShow = await show.save();
+//           createdShows.push(savedShow);
+//         } catch (saveError) {
+//           console.error('Error saving show:', saveError);
+//           return res.status(500).json({ success: false, message: 'Error saving show to database' });
+//         }
+//       }
+//     }
+
+//     res.status(201).json({
+//       success: true,
+//       message: 'Shows created successfully',
+//       shows: createdShows
+//     });
+//   } catch (error) {
+//     console.error('Error creating multiple shows:', error);
+//     res.status(500).json({ success: false, message: 'Internal server error' });
+//   }
+// };
+
+
+
+// // Create multiple shows
+// export const createMultipleShows = async (req, res) => {
+//   try {
+//     const { movieId, theaterId, dates, times, price } = req.body;
+
+//     // Validate input
+//     if (!movieId || !theaterId || !Array.isArray(dates) || !Array.isArray(times) || typeof price !== 'number') {
+//       return res.status(400).json({ success: false, message: 'Invalid input data. Ensure all fields are correct.' });
+//     }
+
+//     // Array to store created shows
+//     const createdShows = [];
+
+//     // Seat configuration: number of seats per row
+//     const seatConfig = [12, 10, 9, 8, 7, 7, 7, 7, 7, ]; // Total 10 rows
+
+//     // Loop through each date and time combination
+//     for (const date of dates) {
+//       // Ensure date is a valid Date object
+//       const parsedDate = new Date(date);
+//       if (isNaN(parsedDate.getTime())) {
+//         return res.status(400).json({ success: false, message: `Invalid date format: ${date}` });
+//       }
+
+//       for (const time of times) {
+//         // Create each show with the specified movie, theater, date, time, and price
+//         const show = new Show({
+//           movie: movieId,
+//           theater: theaterId,
+//           date: parsedDate,
+//           time, // Time is already a string
+//           price
+//         });
+
+//         // Save the show to the database
+//         try {
+//           const savedShow = await show.save();
+//           createdShows.push(savedShow);
+
+//           // Create seats for the saved show according to the defined configuration
+//           for (let rowIndex = 0; rowIndex < seatConfig.length; rowIndex++) {
+//             const seatCountInRow = seatConfig[rowIndex];
+
+//             for (let seatNumber = 1; seatNumber <= seatCountInRow; seatNumber++) {
+//               const seat = new Seat({
+//                 theater: theaterId,
+//                 show: savedShow._id,
+//                 seatNumber: `R${rowIndex + 1}-S${seatNumber}`, // Unique seat identifier
+//                 status: 'available', // or 'booked' based on your logic
+//                 price
+//               });
+
+//               // Save the seat to the database
+//               await seat.save();
+//             }
+//           }
+//         } catch (saveError) {
+//           console.error('Error saving show or seats:', saveError);
+//           return res.status(500).json({ success: false, message: 'Error saving show or seats to database' });
+//         }
+//       }
+//     }
+
+//     res.status(201).json({
+//       success: true,
+//       message: 'Shows and seats created successfully',
+//       shows: createdShows
+//     });
+//   } catch (error) {
+//     console.error('Error creating multiple shows:', error);
+//     res.status(500).json({ success: false, message: 'Internal server error' });
+//   }
+// };
+
+
+
+// // Create multiple shows
+// export const createMultipleShows = async (req, res) => {
+//   try {
+//     const { movieId, theaterId, dates, times, price } = req.body;
+
+//     // Validate input
+//     if (!movieId || !theaterId || !Array.isArray(dates) || !Array.isArray(times) || typeof price !== 'number') {
+//       return res.status(400).json({ success: false, message: 'Invalid input data. Ensure all fields are correct.' });
+//     }
+
+//     const createdShows = [];
+//     const seatConfig = [12, 10, 9, 8, 7, 7, 7, 7, 7, 6]; // Total 10 rows
+
+//     for (const date of dates) {
+//       const parsedDate = new Date(date);
+//       if (isNaN(parsedDate.getTime())) {
+//         return res.status(400).json({ success: false, message: `Invalid date format: ${date}` });
+//       }
+
+//       for (const time of times) {
+//         const show = new Show({
+//           movie: movieId,
+//           theater: theaterId,
+//           date: parsedDate,
+//           time,
+//           price
+//         });
+
+//         try {
+//           const savedShow = await show.save();
+//           createdShows.push(savedShow);
+
+//           // Create seats for this show
+//           for (let rowIndex = 0; rowIndex < seatConfig.length; rowIndex++) {
+//             const seatCountInRow = seatConfig[rowIndex];
+
+//             for (let seatNumber = 1; seatNumber <= seatCountInRow; seatNumber++) {
+//               // Ensure seat number is unique and trimmed
+//               const uniqueSeatNumber = `R${rowIndex + 1}-S${seatNumber}`.trim();
+
+//               try {
+//                 // Check if seat already exists for the show
+//                 const existingSeat = await Seat.findOne({ seatNumber: uniqueSeatNumber, show: savedShow._id });
+
+//                 if (!existingSeat) {
+//                   const seat = new Seat({
+//                     theater: theaterId,
+//                     show: savedShow._id,
+//                     seatNumber: uniqueSeatNumber,
+//                     status: 'available',
+//                     price
+//                   });
+
+//                   await seat.save(); // Save the seat
+//                 }
+//               } catch (seatError) {
+//                 console.error(`Error saving seat ${uniqueSeatNumber}:`, seatError);
+//               }
+//             }
+//           }
+//         } catch (showError) {
+//           console.error('Error saving show or seats:', showError);
+//           return res.status(500).json({ success: false, message: 'Error saving show or seats to database' });
+//         }
+//       }
+//     }
+
+//     res.status(201).json({
+//       success: true,
+//       message: 'Shows and seats created successfully',
+//       shows: createdShows
+//     });
+//   } catch (error) {
+//     console.error('Error creating multiple shows:', error);
+//     res.status(500).json({ success: false, message: 'Internal server error' });
+//   }
+// };
+
+
+
+
+
+
+
 export const createMultipleShows = async (req, res) => {
   try {
     const { movieId, theaterId, dates, times, price } = req.body;
@@ -122,41 +342,57 @@ export const createMultipleShows = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid input data. Ensure all fields are correct.' });
     }
 
-    // Array to store created shows
     const createdShows = [];
+    const seatConfig = [12, 10, 9, 8, 7, 7, 7, 7, 7, 6]; // Total 10 rows
+    const seatsToCreate = []; // Array to batch seat creation
 
-    // Loop through each date and time combination
     for (const date of dates) {
-      // Ensure date is a valid Date object
       const parsedDate = new Date(date);
       if (isNaN(parsedDate.getTime())) {
         return res.status(400).json({ success: false, message: `Invalid date format: ${date}` });
       }
 
       for (const time of times) {
-        // Create each show with the specified movie, theater, date, time, and price
         const show = new Show({
           movie: movieId,
           theater: theaterId,
           date: parsedDate,
-          time, // Time is already a string
+          time,
           price
         });
 
-        // Save the show to the database
         try {
           const savedShow = await show.save();
           createdShows.push(savedShow);
-        } catch (saveError) {
-          console.error('Error saving show:', saveError);
+
+          // Create seats for this show and push them to the array
+          for (let rowIndex = 0; rowIndex < seatConfig.length; rowIndex++) {
+            const seatCountInRow = seatConfig[rowIndex];
+
+            for (let seatNumber = 1; seatNumber <= seatCountInRow; seatNumber++) {
+              const uniqueSeatNumber = `R${rowIndex + 1}-S${seatNumber}`.trim();
+              seatsToCreate.push({
+                theater: theaterId,
+                show: savedShow._id,
+                seatNumber: uniqueSeatNumber,
+                status: 'available',
+                price
+              });
+            }
+          }
+        } catch (showError) {
+          console.error('Error saving show:', showError);
           return res.status(500).json({ success: false, message: 'Error saving show to database' });
         }
       }
     }
 
+    // Batch create seats
+    await Seat.insertMany(seatsToCreate);
+
     res.status(201).json({
       success: true,
-      message: 'Shows created successfully',
+      message: 'Shows and seats created successfully',
       shows: createdShows
     });
   } catch (error) {
@@ -164,6 +400,12 @@ export const createMultipleShows = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
+
+
+
+
+
+
 
 
 // Get show details by ID

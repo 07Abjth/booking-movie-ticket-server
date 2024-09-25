@@ -35,7 +35,7 @@ router.delete('/:id', authTheaterOwnerOrAdmin, deleteShow);
 router.get('/show-details/:id', getShowDetailsById);
 
 // Route for creating multiple shows
-router.post('/create-multiple-shows', authAdmin, createMultipleShows);
+router.post('/create-multiple-shows', createMultipleShows);
 
 // Route to get shows by movie ID
 router.get('/movies/:movieId', getShowsByMovieId);
