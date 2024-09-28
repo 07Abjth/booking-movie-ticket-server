@@ -1,6 +1,6 @@
 import Theater from '../models/theaterModel.js';
 import Movie from '../models/movieModel.js';
-import show from '../models/showModel.js'
+import Seat from '../models/seatModel.js';  
 
 
 // Get all theaters or filter by location
@@ -21,35 +21,52 @@ export const getTheaters = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
- 
- // Create a new theater
- export const createTheater = async (req, res) => {
+
+
+//Create theater
+export const createTheater = async (req, res) => {
   try {
     const { name, location, screens } = req.body;
 
-    // Manual input validation
-    if (!name || typeof name !== 'string' || name.trim() === '') {
-      return res.status(400).json({ success: false, message: 'Valid theater name is required' });
-    }
-    if (!location || typeof location !== 'string' || location.trim() === '') {
-      return res.status(400).json({ success: false, message: 'Valid location is required' });
-    }
-    if (!screens || typeof screens !== 'number' || screens <= 0) {
-      return res.status(400).json({ success: false, message: 'Valid number of screens is required' });
+    // Validate screens array
+    if (!Array.isArray(screens) || screens.length === 0) {
+      return res.status(400).json({ success: false, message: "Valid number of screens is required" });
     }
 
-    // Check if the theater already exists
-    const existingTheater = await Theater.findOne({ name, location });
-    if (existingTheater) {
-      return res.status(400).json({ success: false, message: 'Theater already exists' });
+    // Create the theater
+    const theater = new Theater({ name, location, screens });
+    await theater.save();
+
+    // Loop through each screen to create seats
+    for (const screen of screens) {
+      const { seatLayout, screenNumber, screenType } = screen;
+
+      // Check for seat layout
+      if (!seatLayout || seatLayout.length === 0) {
+        return res.status(400).json({ success: false, message: "Seat layout is required for each screen" });
+      }
+
+      // Create seats based on the seat layout
+      for (const layout of seatLayout) {
+        const { row, number, type } = layout;
+
+        // Loop through the number of seats defined in the layout
+        for (let seatNumber = 1; seatNumber <= number; seatNumber++) {
+          await Seat.create({
+            theater: theater._id,
+            row, // Use the row directly
+            seatNumber: `${row}${seatNumber}`, // Example seat number: A1, A2, etc.
+            type: type || 'Regular', // Default to 'Regular' if not specified
+            status: 'available', // Seats are available by default
+            price: type === 'Premium' ? 200 : 100 // Example pricing logic based on seat type
+          });
+        }
+      }
     }
 
-    // Create and save the new theater
-    const newTheater = new Theater({ name, location, screens });
-    await newTheater.save();
-
-    res.status(201).json({ success: true, message: 'Theater created successfully', data: newTheater });
+    res.status(201).json({ success: true, data: theater });
   } catch (error) {
+    console.error("Error creating theater:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

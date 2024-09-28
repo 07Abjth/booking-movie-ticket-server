@@ -2,7 +2,7 @@ import express from 'express';
 import {createMovie,updateMovie,deleteMovie,} from '../../controllers/movieControllers.js';
 import {createAdmin,loginAdmin,getUsers,getUserById,updateUser,deleteUser, deleteTheaterOwner, checkAdmin} from '../../controllers/adminControllers.js';
 import {createTheater,updateTheater,deleteTheater} from '../../controllers/theaterControllers.js';
-import {createShow,updateShow,deleteShow,} from '../../controllers/showControllers.js';
+import { updateShow,deleteShow,} from '../../controllers/showControllers.js';
 import { updateTheaterOwnerProfile } from '../../controllers/theaterOwnerControllers.js';
 
 
@@ -44,8 +44,7 @@ router.put('/update-theaters/:id', authAdmin, updateTheaterOwnerProfile);
 router.delete('/delete-theaterOwner/:id', authTheaterOwner, deleteTheaterOwner);
 
 // Show management routes
-router.post('/create-shows/create', authAdmin, createShow);  // Protect show creation
-router.put('/update-shows/:id', authAdmin, updateShow);
+ router.put('/update-shows/:id', authAdmin, updateShow);
 router.delete('/delete-shows/:id', authAdmin, deleteShow);
 
 export default router;

@@ -1,7 +1,7 @@
 import express from 'express';
 import { authTheaterOwner } from '../../middleware/authTheaterOwner.js';
 import {theaterOwnerLogin, createTheaterOwnerAccount, updateTheaterOwnerProfile, getTheaterOwnerProfile} from '../../controllers/theaterOwnerControllers.js';
-import {createShow, updateShow, deleteShow} from '../../controllers/showControllers.js'
+import { updateShow, deleteShow} from '../../controllers/showControllers.js'
 import { createTheater, updateTheater, deleteTheater, getTheaterDetails } from '../../controllers/theaterControllers.js';
 
 
@@ -14,9 +14,8 @@ router.put('/profile/update/:id', authTheaterOwner, updateTheaterOwnerProfile);
 router.get('/profile/:id', authTheaterOwner, getTheaterOwnerProfile);
 
 // Showtime Management Routes
-router.post('/show/create', authTheaterOwner, createShow); // Updated route to match function name
-router.put('/show/update/:id', authTheaterOwner, updateShow); // Updated route to match function name
-router.delete('/show/delete/:id', authTheaterOwner, deleteShow); // Updated route to match function name
+router.put('/show/update/:id', authTheaterOwner, updateShow);  
+router.delete('/show/delete/:id', authTheaterOwner, deleteShow);  
 
 // Theater Management Routes
 router.post('/theater/create-theater', authTheaterOwner, createTheater);

@@ -5,6 +5,7 @@ import {
   reserveSeats,
   fetchSeatLayout,
   deleteSeats,
+  getSeatsByTheaterId
   
 } from '../../controllers/seatControllers.js';
 import {  authTheaterOwner } from '../../middleware/authTheaterOwner.js';
@@ -26,6 +27,13 @@ router.get('/seats/:theaterId/:showId', fetchSeatLayout);
 
 // Route to delete seats (restricted to theater owners and admins)
 router.delete('/delete', authTheaterOwner, deleteSeats);
+
+
+
+router.get('/get-seats-by-theater-id/:theaterId', getSeatsByTheaterId);
+
+
+
 
 
 

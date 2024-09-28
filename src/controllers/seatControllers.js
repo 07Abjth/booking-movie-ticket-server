@@ -1,7 +1,8 @@
 
 import Seat from '../models/seatModel.js';
 import Theater from '../models/theaterModel.js';
-
+import mongoose from 'mongoose';
+ 
 
 // Create seats for a show in bulk
 export const createSeats = async (req, res) => {
@@ -145,3 +146,26 @@ export const deleteSeats = async (req, res) => {
 };
 
 
+// Get seats by theater ID
+
+export const getSeatsByTheaterId = async (req, res) => {
+    const { theaterId } = req.params;
+
+    // Check if the theaterId is valid
+    if (!mongoose.Types.ObjectId.isValid(theaterId)) {
+        return res.status(400).json({ success: false, message: 'Invalid theater ID' });
+    }
+
+    try {
+        const seats = await Seat.find({ theater: theaterId });
+
+        if (!seats || seats.length === 0) {
+            return res.status(404).json({ success: false, message: 'No seats found for this theater' });
+        }
+
+        return res.json({ success: true, seats });
+    } catch (error) {
+        console.error("Error fetching seats:", error);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+};
