@@ -1,48 +1,58 @@
-import Payment from '../models/paymentModel.js';
-import Stripe from 'stripe';
+// import razorpayInstance from "../config/razorPayInstance";
+// import * as crypto from 'crpto';
 
-// Initialize Stripe with your secret key
-const stripe = new Stripe('YOUR_STRIPE_SECRET_KEY');
 
-// Create a new payment
-export const createPayment = async (req, res) => {
-  try {
-    const { bookingId, amount, tokenId } = req.body;
+// const order = async (req,res)=>{
+//   const {amount} = req.body;
 
-    // Create a charge with Stripe
-    const charge = await stripe.charges.create({
-      amount: amount * 100, // Amount in cents
-      currency: 'inr',
-      description: `Booking Payment for ${bookingId}`,
-      source: tokenId, // The token ID from Stripe.js
-    });
+//   try {
+//     const options = {
+//         amount: Number("100"),
+//         currency: "INR",
+//         receipt: crypto.randomBytes(10).toString("hex")
+//     };
 
-    // Create and save the payment record
-    const payment = new Payment({
-      booking: bookingId,
-      stripePaymentId: charge.id,
-      amount: amount,
-      status: charge.status === 'succeeded' ? 'Completed' : 'Failed',
-    });
+//     razorpayInstance.orders.create(options, (error, order)=>{
+//       if(error){
+//         console.log(error);
+//         return res.status(500).json({message: "Something went wrong"})
+        
+//       }
+//   return res.status(200).json({data:order});
+// console.log(order);
 
-    await payment.save();
 
-    res.status(201).json(payment);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
+//     })
+
+//   } catch (error) {
+//     res.status(500).json({message: "Internal server error"})
+//   }
+
+// }
+
+
+// import razorPayInstance from '../config/razorPayInstance.js';
+import crypto from 'crypto'; // Correct the crypto import
+
+// Create payment order
+export const createOrder = async (req, res) => {
+ const { amount } = req.body; // Amount should come from frontend
+
+ try {
+   const options = {
+     amount: amount * 100, // Razorpay expects the amount in paise (1 INR = 100 paise)
+     currency: 'INR',
+     receipt: crypto.randomBytes(10).toString('hex'), // Random receipt ID
+   };
+
+   // Create order on Razorpay
+   const order = await razorpayInstance.orders.create(options);
+
+   // Send the order ID back to the frontend
+   res.status(200).json({ orderId: order.id, amount: order.amount, currency: order.currency });
+ } catch (error) {
+   console.error('Error creating Razorpay order:', error);
+   res.status(500).json({ message: 'Error creating Razorpay order', error });
+ }
 };
 
-// Get payment details by ID
-export const getPaymentById = async (req, res) => {
-  try {
-    const payment = await Payment.findById(req.params.id);
-    if (payment) {
-      res.json(payment);
-    } else {
-      res.status(404).json({ message: 'Payment not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};

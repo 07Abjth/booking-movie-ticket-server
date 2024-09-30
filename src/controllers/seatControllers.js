@@ -2,6 +2,7 @@
 import Seat from '../models/seatModel.js';
 import Theater from '../models/theaterModel.js';
 import mongoose from 'mongoose';
+import ShowSeat from '../models/showSeatModel.js'
  
 
 // Create seats for a show in bulk
@@ -168,4 +169,78 @@ export const getSeatsByTheaterId = async (req, res) => {
         console.error("Error fetching seats:", error);
         return res.status(500).json({ success: false, message: "Server error" });
     }
+};
+
+
+
+
+// Controller to get seat prices by theater ID
+// export const getSeatPrices = async (req, res) => {
+//   try {
+//       const { theaterId } = req.params;
+
+//       // Fetch the seats from the database for the given theater ID
+//       const seats = await Seat.find({ theaterId });
+
+//       // Map to get seat numbers and prices
+//       const seatPrices = seats.map(seat => ({
+//           seatNumber: seat.seatNumber,
+//           price: seat.price,
+//       }));
+
+//       return res.status(200).json(seatPrices);
+//   } catch (error) {
+//       console.error('Error fetching seat prices:', error);
+//       return res.status(500).json({ error: 'Error fetching seat prices' });
+//   }
+// };
+
+
+// export const getSeatPricesForShowtime = async (req, res) => {
+//   const { showId } = req.params;
+
+//   try {
+//     const showtime = await Showtime.findById(showId).populate('seats');
+
+//     if (!showtime) {
+//       return res.status(404).json({ success: false, message: 'Showtime not found' });
+//     }
+
+//     const seatPrices = showtime.seats.map(seat => ({
+//       seatId: seat._id,
+//       price: seat.price,
+//       seatNumber: seat.seatNumber
+//     }));
+
+//     return res.status(200).json({ success: true, seatPrices });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ success: false, message: 'Server error' });
+//   }
+// };
+
+
+export const getSeatPricesByTheater = async (req, res) => {
+  const { theaterId } = req.params;
+
+  try {
+    // Find the theater by the provided theaterId and populate seats
+    const theater = await Theater.findById(theaterId).populate('seats');
+
+    if (!theater) {
+      return res.status(404).json({ success: false, message: 'Theater not found' });
+    }
+
+    // Map through the seats to extract seat number and price
+    const seatPrices = theater.seats.map(seat => ({
+      seatId: seat._id,
+      price: seat.price,
+      seatNumber: seat.seatNumber,
+    }));
+
+    return res.status(200).json({ success: true, seatPrices });
+  } catch (error) {
+    console.error('Error fetching seat prices:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
 };

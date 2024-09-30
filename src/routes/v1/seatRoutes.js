@@ -5,11 +5,13 @@ import {
   reserveSeats,
   fetchSeatLayout,
   deleteSeats,
-  getSeatsByTheaterId
+  getSeatsByTheaterId,
+  // getSeatPrices,
+  getSeatPricesByTheater
   
 } from '../../controllers/seatControllers.js';
 import {  authTheaterOwner } from '../../middleware/authTheaterOwner.js';
-
+  
 const router = express.Router();
 
 // Route to create seats in bulk (restricted to theater owners and admins)
@@ -34,6 +36,8 @@ router.get('/get-seats-by-theater-id/:theaterId', getSeatsByTheaterId);
 
 
 
+// Route route to get seat prices by show ID
+router.get('/get-seat-prices/:theaterId', getSeatPricesByTheater);
 
 
 

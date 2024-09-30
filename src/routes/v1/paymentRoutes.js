@@ -1,12 +1,12 @@
 import express from 'express';
-import { createPayment, getPaymentById } from '../../controllers/paymentControllers.js';
+import { createOrder } from '../../controllers/paymentControllers.js';
 
 const router = express.Router();
 
-// Route to create a new payment
-router.post('/', createPayment);
 
-// Route to get payment details by ID
-router.get('/:id', getPaymentById);
+
+// Define route for creating payment order
+router.post('/create-order', createOrder);
+
 
 export default router;

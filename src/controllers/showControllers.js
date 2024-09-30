@@ -5,7 +5,76 @@ import ShowSeat from '../models/showSeatModel.js';
 import Seat from '../models/seatModel.js';
 
 
-//Create show
+// //Create show
+// export const createShowOrMultipleShows = async (req, res) => {
+//   try {
+//     const { movieId, theaterId, screenNumber, startDate, endDate, showTimes, price } = req.body;
+
+//     // Validate theater existence
+//     const theater = await Theater.findById(theaterId).populate('screens');
+//     if (!theater) {
+//       return res.status(404).json({ success: false, message: "Theater not found" });
+//     }
+
+//     // Validate screen existence
+//     const screen = theater.screens.find(s => s.screenNumber === screenNumber);
+//     if (!screen) {
+//       return res.status(404).json({ success: false, message: "Screen not found in this theater" });
+//     }
+
+//     // Fetch existing seats for this theater and screen
+//     const seats = await Seat.find({ theater: theaterId, screen: screen._id });
+//     if (!seats.length) {
+//       return res.status(404).json({ success: false, message: 'No seats found for this theater.' });
+//     }
+
+//     const createdShows = [];
+
+//     // Loop through the showTimes array to create shows for each day and time
+//     for (const { day, times } of showTimes) {
+//       for (const time of times) {
+//         const showDate = new Date(startDate);
+//         const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
+
+//         // Calculate the actual date for the show
+//         showDate.setDate(showDate.getDate() + ((dayIndex - showDate.getDay() + 7) % 7)); // Get the next occurrence of the specified day
+
+//         const show = new Show({
+//           movie: movieId,
+//           theater: theaterId,
+//           screenNumber,
+//           date: showDate, // Set the date field
+//           time: time,     // Set the time field
+//         });
+
+//         await show.save();
+
+//         // Create ShowSeat entries by linking existing seats to the show
+//         const showSeats = seats.map(seat => ({
+//           seat: seat._id,
+//           show: show._id,
+//           status: 'available',
+//           price: seat.type === 'Premium' ? price.premium || 200 :
+//                  seat.type === 'Luxury' ? price.luxury || 300 :
+//                  price.regular || 100,
+//         }));
+
+//         await ShowSeat.insertMany(showSeats);
+//         createdShows.push(show);
+//       }
+//     }
+
+//     res.status(201).json({ success: true, data: createdShows });
+//   } catch (error) {
+//     console.error("Error creating show(s):", error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
+
+ 
+
+// Create show or multiple shows
 export const createShowOrMultipleShows = async (req, res) => {
   try {
     const { movieId, theaterId, screenNumber, startDate, endDate, showTimes, price } = req.body;
@@ -23,7 +92,7 @@ export const createShowOrMultipleShows = async (req, res) => {
     }
 
     // Fetch existing seats for this theater and screen
-    const seats = await Seat.find({ theater: theaterId, screen: screen._id });
+    const seats = await Seat.find({ theater: theaterId });
     if (!seats.length) {
       return res.status(404).json({ success: false, message: 'No seats found for this theater.' });
     }
@@ -54,9 +123,7 @@ export const createShowOrMultipleShows = async (req, res) => {
           seat: seat._id,
           show: show._id,
           status: 'available',
-          price: seat.type === 'Premium' ? price.premium || 200 :
-                 seat.type === 'Luxury' ? price.luxury || 300 :
-                 price.regular || 100,
+          price: getPriceByType(seat.type, price), // Dynamic pricing based on seat type
         }));
 
         await ShowSeat.insertMany(showSeats);
@@ -68,6 +135,18 @@ export const createShowOrMultipleShows = async (req, res) => {
   } catch (error) {
     console.error("Error creating show(s):", error);
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Function to determine price based on seat type
+const getPriceByType = (seatType, price) => {
+  switch (seatType) {
+    case 'Premium':
+      return price.premium || 200; // Default price if not provided
+    case 'Luxury':
+      return price.luxury || 300; // Default price if not provided
+    default:
+      return price.regular || 100; // Default price if not provided
   }
 };
 
