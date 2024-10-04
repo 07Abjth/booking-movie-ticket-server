@@ -244,3 +244,258 @@ export const getSeatPricesByTheater = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+
+
+ 
+// // Get price of a specific seat for a particular show
+// export const getSeatPrices = async (req, res) => {
+//   try {
+//     const { showId, seatId } = req.params;
+
+//     // Fetch the seat price from the ShowSeat model
+//     const showSeat = await ShowSeat.findOne({ show: showId, seat: seatId }); // Adjust field names if necessary
+
+//     if (!showSeat) {
+//       return res.status(404).json({ success: false, message: "Seat or show not found" });
+//     }
+
+//     // Assuming the showSeat document has a price field
+//     const seatPrice = showSeat.price; // Adjust if your ShowSeat model has a different field for price
+
+//     res.status(200).json({ success: true, price: seatPrice });
+//   } catch (error) {
+//     console.error("Error fetching seat price:", error);
+//     res.status(500).json({ success: false, message: "Server error fetching seat price" });
+//   }
+// };
+
+
+export const getSeatPrices = async (req, res) => {
+  try {
+      const { seatId } = req.params;
+      // Check if seatId is valid (not undefined or null)
+      if (!seatId) {
+          return res.status(400).json({ success: false, message: "Seat ID is required." });
+      }
+
+      // Fetch the seat price from the ShowSeat model
+      const showSeat = await ShowSeat.findOne({ seat: seatId }); // Adjust field names if necessary
+      if (!showSeat) {
+          return res.status(404).json({ success: false, message: "Seat not found" });
+      }
+
+      const seatPrice = showSeat.price; // Adjust if your ShowSeat model has a different field for price
+      res.status(200).json({ success: true, price: seatPrice });
+  } catch (error) {
+      console.error("Error fetching seat price:", error);
+      res.status(500).json({ success: false, message: "Server error fetching seat price" });
+  }
+};
+
+// export const getSeatPricesBySeatNumber = async (req, res) => {
+//   try {
+//     const { seatId } = req.params; // Get the seatId from request parameters (which will be like 'B7')
+
+//     // Fetch the seat info based on the seat number
+//     const seatPriceInfo = await Seat.findOne({ seatNumber: seatId });
+
+//     if (!seatPriceInfo) {
+//         return res.status(404).json({ message: 'Seat not found' });
+//     }
+
+//     // Return the price or other relevant information
+//     return res.status(200).json({ price: seatPriceInfo.price }); // Adjust according to your model structure
+// } catch (error) {
+//     console.error('Error fetching seat price:', error);
+//     return res.status(500).json({ message: 'Internal server error' });
+// }
+// };
+
+
+export const getSeatPricesBySeatNumber = async (req, res) => {
+  try {
+      const { seatId: seatNumber } = req.params; // Get the seatNumber from the request parameters
+
+      console.log('Fetching price for seatNumber:', seatNumber); // Log the seatNumber for debugging
+
+      // Find the seat by its seatNumber in the Seat collection
+      const seatInfo = await Seat.findOne({ seatNumber });
+
+      if (!seatInfo) {
+          console.log(`Seat not found for seatNumber: ${seatNumber}`);
+          return res.status(404).json({ success: false, message: 'Seat not found' });
+      }
+
+      console.log(`Seat found: ${seatInfo}`); // Log seat info
+
+      // Find the corresponding ShowSeat entry based on the seat ID from the Seat model
+      const showSeatInfo = await ShowSeat.findOne({ seat: seatInfo._id });
+
+      if (!showSeatInfo) {
+          console.log(`ShowSeat not found for seat: ${seatInfo._id}`);
+          return res.status(404).json({ success: false, message: 'Seat not found for the show' });
+      }
+
+      console.log(`ShowSeat found: ${showSeatInfo}`); // Log show seat info
+
+      // Return the price from ShowSeat
+      return res.status(200).json({ success: true, price: showSeatInfo.price });
+  } catch (error) {
+      console.error('Error fetching seat price:', error); // Log the error for debugging
+      return res.status(500).json({ success: false, message: 'Server error fetching seat price' });
+  }
+};
+
+
+
+
+// Controller to fetch seats and their prices based on theater and show IDs
+// export const getSeatsAndSeatsPriceFromTheaterAndShowId = async (req, res) => {
+//   const { theaterId, showId } = req.params;
+
+//   try {
+//       // Fetch all seats for the specified theater
+//       const seats = await Seat.find({ theater: theaterId });
+
+//       // If no seats found, respond with an appropriate message
+//       if (!seats || seats.length === 0) {
+//           return res.status(404).json({ message: 'No seats found for this theater.' });
+//       }
+
+//       // Fetch ShowSeat records for the specified show
+//       const showSeats = await ShowSeat.find({ show: showId });
+
+//       // Create a map of seat IDs to their prices
+//       const seatPriceMap = showSeats.reduce((acc, showSeat) => {
+//           acc[showSeat.seat.toString()] = showSeat.price; // Map the seat ID to its price
+//           return acc;
+//       }, {});
+
+//       // Create an array of seat information with the associated price
+//       const seatsWithPrices = seats.map(seat => ({
+//           seatNumber: seat.seatNumber, // Assuming the seat model has a seatNumber field
+//           isAvailable: seat.isAvailable,
+//           price: seatPriceMap[seat._id.toString()] || null, // Use the price from the map, or null if not found
+//       }));
+
+//       // Respond with the seats and their prices
+//       return res.status(200).json({ seats: seatsWithPrices });
+//   } catch (error) {
+//       console.error(error);
+//       return res.status(500).json({ message: 'Server error while fetching seats.', error: error.message });
+//   }
+// };
+
+
+// Controller to fetch seat prices based on the show ID
+// export const getSeatPricesForShow = async (req, res) => {
+//   const { showId } = req.params;
+
+//   try {
+//       // Fetch ShowSeat records for the specified show
+//       const showSeats = await ShowSeat.find({ show: showId });
+
+//       // If no show seats found, respond with an appropriate message
+//       if (!showSeats || showSeats.length === 0) {
+//           return res.status(404).json({ message: 'No seats found for this show.' });
+//       }
+
+//       // Create an array of seat prices
+//       const seatsWithPrices = showSeats.map(showSeat => ({
+//           seatId: showSeat.seat.toString(), // Assuming showSeat has a reference to the seat
+//           price: showSeat.price, // Get the price directly from ShowSeat
+//       }));
+
+//       // Respond with the seat prices
+//       return res.status(200).json({ seats: seatsWithPrices });
+//   } catch (error) {
+//       console.error(error);
+//       return res.status(500).json({ message: 'Server error while fetching seat prices.', error: error.message });
+//   }
+// };
+
+
+
+export const getSeatPricesForShow = async (req, res) => {
+  const { showId } = req.params;
+
+  try {
+      // Log the incoming showId
+      console.log("Fetching seat prices for showId:", showId);
+
+      // Fetch ShowSeat records for the specified show and populate seat data if needed
+      const showSeats = await ShowSeat.find({ show: showId }).populate('seat');
+
+      // If no show seats found, respond with an appropriate message
+      if (!showSeats || showSeats.length === 0) {
+          return res.status(404).json({ message: 'No seats found for this show.' });
+      }
+
+      // Create an array of seat prices
+      const seatsWithPrices = showSeats.map(showSeat => ({
+          seatId: showSeat.seat._id.toString(), // Ensure you are getting the correct seat reference
+          price: showSeat.price, // Get the price directly from ShowSeat
+      }));
+
+      // Respond with the seat prices
+      return res.status(200).json({ seats: seatsWithPrices });
+  } catch (error) {
+      console.error("Error fetching seat prices for showId:", showId, error);
+      return res.status(500).json({ message: 'Server error while fetching seat prices.', error: error.message });
+  }
+};
+
+
+// export const getSeatPricesForShow = async (req, res) => {
+//   const { showId } = req.params;
+
+//   try {
+//       // Fetch ShowSeat records for the specified show and populate seat details
+//       const showSeats = await ShowSeat.find({ show: showId }).populate('seat');
+
+//       // If no show seats found, respond with an appropriate message
+//       if (!showSeats || showSeats.length === 0) {
+//           return res.status(404).json({ message: 'No seats found for this show.' });
+//       }
+
+//       // Map through the showSeats to create an array of seat prices
+//       const seatsWithPrices = showSeats.map(showSeat => ({
+//           seatId: showSeat.seat._id.toString(),
+//           price: showSeat.price,
+//           status: showSeat.status, // You can return the seat status as well if needed
+//       }));
+
+//       // Respond with the seat prices
+//       return res.status(200).json({ seats: seatsWithPrices });
+//   } catch (error) {
+//       console.error("Error fetching seat prices for showId:", showId, error);
+//       return res.status(500).json({ message: 'Server error while fetching seat prices.', error: error.message });
+//   }
+// };
+
+
+
+export const getSeatPriceByShowSeatId = async (req, res) => {
+  const { showSeatId } = req.params;
+
+  try {
+    // Fetch ShowSeat by its ID
+    const showSeat = await ShowSeat.findById(showSeatId);
+
+    // If the ShowSeat is not found, return a 404
+    if (!showSeat) {
+      return res.status(404).json({ message: 'ShowSeat not found.' });
+    }
+
+    // Return the seat price
+    return res.status(200).json({
+      seatId: showSeat.seat.toString(),
+      price: showSeat.price,
+      status: showSeat.status,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error while fetching seat price.', error: error.message });
+  }
+};
