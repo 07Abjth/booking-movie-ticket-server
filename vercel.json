@@ -13,7 +13,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/src/app.js" // This ensures all other requests go to your app
+      "dest": "/src/app.js" 
     }
   ]
 }
