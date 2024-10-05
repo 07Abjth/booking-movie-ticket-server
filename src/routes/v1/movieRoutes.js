@@ -18,17 +18,17 @@ import { authUser } from '../../middleware/authUser.js';
 const router = express.Router();
 
 // Routes
-router.post('/create-movie', upload.single("poster"), authAdmin, createMovie);  // Only admins can create movies
-router.get('/moviesList', getAllMovies);                                       // List all movies
-router.get('/details/:id',  getMovieById);                            // Get movie by ID (requires user authentication)
-router.put('/update/:id', authAdmin, updateMovie);                             // Update movie (admin only)
-router.delete('/delete/:id', authAdmin, deleteMovie);                          // Delete movie (admin only)
+router.post('/create-movie', upload.single("poster"), authAdmin, createMovie);  
+router.get('/moviesList', getAllMovies);                                        
+router.get('/details/:id',  getMovieById);                             
+router.put('/update/:id', authAdmin, updateMovie);                              
+router.delete('/delete/:id', authAdmin, deleteMovie);                           
 
 // Additional routes for specific movie lists
-router.get('/upcoming', getUpcomingMovies);                                    // Get upcoming movies
-router.get('/trending', getTrendingMovies);                                    // Get trending movies
-router.get('/new-releases', getNewReleases);                                   // Get new releases
-router.post('/search', searchMovies);                                         // Search movies
+router.get('/upcoming', getUpcomingMovies);                                     
+router.get('/trending', getTrendingMovies);                                    
+router.get('/new-releases', getNewReleases);                                   
+router.post('/search', searchMovies);                                          
 
 
 

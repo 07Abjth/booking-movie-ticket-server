@@ -3,7 +3,7 @@ import Theater from '../models/theaterModel.js';
 import Movie from '../models/movieModel.js';
 import ShowSeat from '../models/showSeatModel.js';
 import Seat from '../models/seatModel.js';
-
+import mongoose from 'mongoose';
 
 // //Create show
 // export const createShowOrMultipleShows = async (req, res) => {
@@ -153,19 +153,47 @@ const getPriceByType = (seatType, price) => {
 
 
 
+// // Get show details by ID
+// export const getShowById = async (req, res) => {
+//     try {
+//         const show = await Show.findById(req.params.id).populate('movie').populate('theater');
+//         if (!show) {
+//             return res.status(404).json({ success: false, message: 'Show not found.' });
+//         }
+//         res.status(200).json({ success: true, data: show });
+//     } catch (error) {
+//         console.error('Error fetching show details:', error);
+//         res.status(500).json({ success: false, message: 'Internal server error.' });
+//     }
+// };
+
+
+
 // Get show details by ID
-export const getShowDetailsById = async (req, res) => {
-    try {
-        const show = await Show.findById(req.params.id).populate('movie').populate('theater');
-        if (!show) {
-            return res.status(404).json({ success: false, message: 'Show not found.' });
-        }
-        res.status(200).json({ success: true, data: show });
-    } catch (error) {
-        console.error('Error fetching show details:', error);
-        res.status(500).json({ success: false, message: 'Internal server error.' });
-    }
+export const getShowById = async (req, res) => {
+  try {
+      const { showId } = req.params; // Extract showId from request parameters
+      
+      console.log('Received showId:', showId); // Log the received showId
+
+      // Validate the show ID
+      if (!mongoose.Types.ObjectId.isValid(showId)) {
+          console.log('Invalid ObjectId:', showId); // Log if it's invalid
+          return res.status(400).json({ success: false, message: 'Invalid show ID.' });
+      }
+
+      const show = await Show.findById(showId).populate('movie').populate('theater');
+      if (!show) {
+          return res.status(404).json({ success: false, message: 'Show not found.' });
+      }
+
+      res.status(200).json({ success: true, data: show });
+  } catch (error) {
+      console.error('Error fetching show details for ID:', req.params.id, error);
+      res.status(500).json({ success: false, message: 'Internal server error.', error: error.message });
+  }
 };
+
 
 // Get shows by movie ID
 export const getShowsByMovie = async (req, res) => {

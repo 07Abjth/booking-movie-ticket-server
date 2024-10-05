@@ -71,11 +71,9 @@ export const createTheater = async (req, res) => {
   }
 };
 
-
-// Get theater details by ID
 export const getTheaterDetails = async (req, res) => {
   try {
-    const { theaterId } = req.query; // Assume theaterId is provided as a query parameter
+    const { theaterId } = req.params; // Get theaterId from the URL parameters
 
     // Validate the theaterId
     if (!theaterId) {
@@ -241,3 +239,6 @@ export const getTheatersByMovieId = async (req, res) => {
     res.status(500).json({ message: 'Error fetching theaters' });
   }
 };
+
+
+ 

@@ -8,7 +8,8 @@ import {
   getTheatersByLocation,
   addMoviesToTheater,
   getTheatersByIds,
-  getTheatersByMovieId
+  getTheatersByMovieId,
+  getTheaterDetails
 } from '../../controllers/theaterControllers.js';
 import authTheaterOwnerOrAdmin from '../../middleware/authTheaterOwnerOrAdmin.js';
 
@@ -36,11 +37,14 @@ router.get('/theaters/location/:location', getTheatersByLocation);
 router.put('/:theaterId/movies', addMoviesToTheater);
 
 // Route to fetch theaters by an array of Theater IDs
-router.post('/theaters/:by-ids', getTheatersByIds); // Add this line
-
+router.post('/theaters/:theaterId', getTheatersByIds); // Add this line
 
 
 // Route to get theaters by movie ID
 router.get('/theaters/movie/:movieId', getTheatersByMovieId);
+
+
+// Route to get theater details by ID
+router.get('/details/:theaterId', getTheaterDetails);
 
 export default router;

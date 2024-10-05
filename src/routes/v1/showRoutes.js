@@ -4,7 +4,7 @@ import { authAdmin } from '../../middleware/authAdmin.js';
 import {
   updateShow,
   deleteShow,
-  getShowDetailsById,
+  getShowById,
   createShowOrMultipleShows,
   getShowsByMovieId,
 } from '../../controllers/showControllers.js';
@@ -20,8 +20,8 @@ router.put('/update-show/:id', authTheaterOwnerOrAdmin, updateShow);
 // Theater owners and admins can delete a show
 router.delete('/:id', authTheaterOwnerOrAdmin, deleteShow);
 
-// Route to get show details by ID (open to all)
-router.get('/show-details/:id', getShowDetailsById);
+// Route to get show details by ID 
+router.get('/:showId', getShowById);
 
 
 

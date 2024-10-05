@@ -270,3 +270,15 @@ export const getMovieDetails = async (req, res) => {
 };
 
 
+// export const getMovieDetails = async (req, res) => {
+//   try {
+//     const movie = await Movie.findById(req.params.movieId);
+//     if (!movie) {
+//       return res.status(404).json({ message: 'Movie not found' }); // Make sure a proper error is sent if not found
+//     }
+//     res.json(movie);
+//   } catch (error) {
+//     console.error('Error fetching movie details:', error); // Log the error for debugging
+//     res.status(500).json({ message: 'Error fetching movie details', error });
+//   }
+// };
