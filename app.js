@@ -14,21 +14,21 @@ const app = express();
 app.use(express.json()); // Parse JSON bodies
 app.use(cookieParser());
 
-// app.use(cors({
-//   origin: 'https://booking-movie-ticket-client.vercel.app',
-//   // origin: 'http://localhost:5173',
-  
-//   credentials:true,
-
-// }))
-
-
 app.use(cors({
-  origin: 'booking-movie-ticket-client-ddjm9typz-abhijith-bss-projects.vercel.app',
-  //   // origin: 'http://localhost:5173',
+  origin: 'https://booking-movie-ticket-client.vercel.app',
+  // origin: 'http://localhost:5173',
+  
+  credentials:true,
 
-  credentials: true,
-}));
+}))
+
+
+// app.use(cors({
+//   origin: 'booking-movie-ticket-client-ddjm9typz-abhijith-bss-projects.vercel.app',
+//   //   // origin: 'http://localhost:5173',
+
+//   credentials: true,
+// }));
 
 
 // const allowedOrigins = [
