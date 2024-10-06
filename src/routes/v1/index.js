@@ -6,7 +6,7 @@ import theaterRouter from './theaterRoutes.js'
 import showRouter from './showRoutes.js'
 import seatRouter from './seatRoutes.js'
 import ratingRouter from './ratingRoutes.js'
-// import paymentRouter from './paymentRoutes.js'
+import paymentRouter from './paymentRoutes.js'
 import bookingRouter from './bookingRoutes.js'
 import adminRouter from './adminRoutes.js'
 
@@ -21,7 +21,7 @@ v1Router.use('/theater',theaterRouter)
 v1Router.use('/show',showRouter)
 v1Router.use('/seat',seatRouter)
 v1Router.use('/rating', ratingRouter)
-// v1Router.use('/payment',paymentRouter)
+v1Router.use('/payment',paymentRouter)
 v1Router.use('/booking',bookingRouter)
 v1Router.use('/admin',adminRouter)
 
