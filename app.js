@@ -17,7 +17,7 @@ app.use(cookieParser());
 
 
 app.use(cors({
-  origin: ['cineticketsbook.vercel.app','http://localhost:5173'],
+  origin: 'cineticketsbook.vercel.app',
   
   credentials:true,
 
