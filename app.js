@@ -31,6 +31,17 @@ app.use(cors({
 }));
 
 
+
+// // CORS setup
+// app.use(cors({
+//   origin: [
+//     'https://booking-movie-ticket-client.vercel.app', // Production client URL
+//     'http://localhost:4000', // Your backend development URL (if this is the server address)
+//     'http://localhost:5173' // Optional, if your frontend runs on this port
+//   ],
+//   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+// }));
+
 // const allowedOrigins = [
 //   'http://localhost:5173',  // Local development
 //   'https://booking-movie-ticket-client.vercel.app',  // Primary Vercel deployment
