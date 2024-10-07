@@ -24,7 +24,7 @@ app.use(cookieParser());
 
 
 app.use(cors({
-  origin: 'https://booking-movie-ticket-client-ddjm9typz-abhijith-bss-projects.vercel.app',
+  origin: ['https://booking-movie-ticket-client.vercel.app','http://localhost:4000'],
   //   // origin: 'http://localhost:5173',
 
   credentials: true,
