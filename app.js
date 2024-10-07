@@ -23,31 +23,31 @@ app.use(cookieParser());
 // }))
 
 
-app.use(cors({
-  origin: 'https://booking-movie-ticket-client.vercel.app',
-  //   // origin: 'http://localhost:5173',
-
-  credentials: true,
-}));
-
-
-// const allowedOrigins = [
-//   'http://localhost:5173',  // Local development
-//   'https://booking-movie-ticket-client.vercel.app',  // Primary Vercel deployment
-//   'https://booking-movie-ticket-client-ddjm9typz-abhijith-bss-projects.vercel.app'  // Alternate Vercel deployment
-// ];
-
 // app.use(cors({
-//   origin: function (origin, callback) {
-//     console.log('Origin:', origin);  // Log the origin for debugging
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
+//   origin: 'https://booking-movie-ticket-client.vercel.app',
+//   //   // origin: 'http://localhost:5173',
+
 //   credentials: true,
 // }));
+
+
+const allowedOrigins = [
+  'http://localhost:5173',  // Local development
+  'https://booking-movie-ticket-client.vercel.app',  // Primary Vercel deployment
+  'https://booking-movie-ticket-client-ddjm9typz-abhijith-bss-projects.vercel.app'  // Alternate Vercel deployment
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    console.log('Origin:', origin);  // Log the origin for debugging
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 
 
 
