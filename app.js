@@ -15,7 +15,6 @@ app.use(express.json()); // Parse JSON bodies
 app.use(cookieParser());
 
 
-const cors = require('cors');
 app.use(cors({ origin: 'https://cineticketsbook.vercel.app' }));
 
 
