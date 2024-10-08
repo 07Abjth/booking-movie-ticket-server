@@ -24,9 +24,6 @@ app.use(cors({
 
 
 
-
-
-
 // Test route
 app.get('/', (req, res) => {
   res.send('Hello, World!');
