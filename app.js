@@ -16,10 +16,13 @@ app.use(cookieParser());
 
 
 
+// Enable CORS for all requests
+app.use(cors());
+
+// Optionally, enable CORS only for your frontend domain
 app.use(cors({
   origin: 'https://cineticketsbook.vercel.app'
 }));
-
 
 
 // Test route
