@@ -17,7 +17,7 @@ app.use(cookieParser());
 
 
 app.use(cors({
-  origin: ['https://cine-ticket-book-d89fq33bp-abhijith-bss-projects.vercel.app/', 'http://localhost:5173'],
+  origin: ['https://cine-ticket-book.vercel.app/', 'http://localhost:5173'],
   credentials: true,
 }));
 
