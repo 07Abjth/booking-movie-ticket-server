@@ -23,7 +23,6 @@ const corsOptions = {
     'https://cine-ticket-book.vercel.app', // Production frontend
     'http://localhost:5173' // Development frontend
   ],
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // Specify allowed methods
   credentials: true, // Allow credentials (if needed)
 };
 

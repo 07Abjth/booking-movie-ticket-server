@@ -20,7 +20,7 @@ router.post('/login', loginUser);
 
 
 // Check if a user exists by email or ID
-router.get('/check-user', authUser, checkUser);
+router.get('/check-user',  checkUser);
 
 // Get the profile of the authenticated user
 router.get('/profile', authUser, userProfile);
