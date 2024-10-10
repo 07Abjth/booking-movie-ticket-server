@@ -25,7 +25,7 @@ router.put('/update/:id', authAdmin, updateMovie);
 router.delete('/delete/:id', authAdmin, deleteMovie);                           
 
 // Additional routes for specific movie lists
-router.get('/api/v1/movie/upcoming', getUpcomingMovies);                                     
+router.get('/upcoming', getUpcomingMovies);                                     
 router.get('/trending', getTrendingMovies);                                    
 router.get('/new-releases', getNewReleases);                                   
 router.post('/search', searchMovies);                                          

@@ -17,23 +17,16 @@ app.use(cookieParser());
 
 
 
- 
-// CORS Configuration with additional options
+// Configure CORS
 const corsOptions = {
   origin: [
     'https://cine-ticket-book.vercel.app', // Production frontend
     'http://localhost:5173' // Development frontend
   ],
-  credentials: true, // Allow credentials (cookies, etc.)
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  credentials: true, // Allow credentials (if needed)
 };
 
-// Apply CORS middleware
 app.use(cors(corsOptions));
-
-// Handle preflight requests
-app.options('*', cors(corsOptions));
 
 
  
