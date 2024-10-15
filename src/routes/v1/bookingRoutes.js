@@ -6,8 +6,7 @@ import {
   getBookingById,
   cancelBooking,
 } from '../../controllers/bookingControllers.js';
-import { authTheaterOwner } from '../../middleware/authTheaterOwner.js';
-import {authAdmin} from '../../middleware/authAdmin.js'
+ import {authAdmin} from '../../middleware/authAdmin.js'
 import {authUser} from '../../middleware/authUser.js'
 
 

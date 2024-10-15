@@ -8,7 +8,7 @@ import { updateTheaterOwnerProfile } from '../../controllers/theaterOwnerControl
 
 import { upload } from '../../middleware/uploadMiddleware.js';
 import { authAdmin } from '../../middleware/authAdmin.js';
-import { authTheaterOwner } from '../../middleware/authTheaterOwner.js';
+ import authTheaterOwnerOrAdmin from '../../middleware/authTheaterOwnerOrAdmin.js';
 
 const router = express.Router();
 
@@ -41,7 +41,7 @@ router.delete('/delete-theaters/:id', authAdmin, deleteTheater);
 
 //Theater owner management
 router.put('/update-theaters/:id', authAdmin, updateTheaterOwnerProfile);
-router.delete('/delete-theaterOwner/:id', authTheaterOwner, deleteTheaterOwner);
+router.delete('/delete-theaterOwner/:id',  authTheaterOwnerOrAdmin, deleteTheaterOwner);
 
 // Show management routes
  router.put('/update-shows/:id', authAdmin, updateShow);

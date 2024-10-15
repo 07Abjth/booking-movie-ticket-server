@@ -11,7 +11,7 @@ import {
   getSeatPriceByShowSeatId,
   getSeatPricesBySeatNumber
  } from '../../controllers/seatControllers.js';
-import {  authTheaterOwner } from '../../middleware/authTheaterOwner.js';
+ import authTheaterOwnerOrAdmin from '../../middleware/authTheaterOwnerOrAdmin.js';
   
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.post('/reserve', reserveSeats);
 router.get('/seats/:theaterId/:showId', fetchSeatLayout);
 
 // Route to delete seats (restricted to theater owners and admins)
-router.delete('/delete', authTheaterOwner, deleteSeats);
+router.delete('/delete', authTheaterOwnerOrAdmin, deleteSeats);
 
 
 
