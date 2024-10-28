@@ -134,28 +134,10 @@ export const createMovie = async (req, res) => {
 
 
 
-// Get all movies
-export const getAllMovies = async (req, res) => {
-  try {
-    const movies = await Movie.find();
-    return res.status(200).json({ success: true, data: movies });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-};
 
-// Get movie by ID
-export const getMovieById = async (req, res) => {
-  try {
-    const movie = await Movie.findById(req.params.id);
-    if (!movie) {
-      return res.status(404).json({ success: false, message: 'Movie not found' });
-    }
-    return res.status(200).json({ success: true, data: movie });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-};
+
+
+
 
 // Update movie
 export const updateMovie = async (req, res) => {
@@ -258,27 +240,66 @@ export const getTheatersByMovie = async (req, res) => {
 
 
 
-// Get movie details by movieId
-export const getMovieDetails = async (req, res) => {
+
+ // Get all movies
+export const getAllMovies = async (req, res) => {
   try {
-    const movie = await Movie.findById(req.params.movieId);
-    if (!movie) return res.status(404).json({ message: 'Movie not found' });
-    res.json(movie);
+    const movies = await Movie.find();
+    return res.status(200).json({ success: true, data: movies });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching movie details', error });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
+// // Get movie by ID
+// export const getMovieById = async (req, res) => {
+//   try {
+//     const movie = await Movie.findById(req.params.id);
+//     if (!movie) {
+//       return res.status(404).json({ success: false, message: 'Movie not found' });
+//     }
+//     return res.status(200).json({ success: true, data: movie });
+//   } catch (error) {
+//     return res.status(500).json({ success: false, message: error.message });
+//   }
+// };
 
+
+// // Get movie details by movieId
 // export const getMovieDetails = async (req, res) => {
 //   try {
 //     const movie = await Movie.findById(req.params.movieId);
 //     if (!movie) {
-//       return res.status(404).json({ message: 'Movie not found' }); // Make sure a proper error is sent if not found
+//       return res.status(404).json({ success: false, message: 'Movie not found' });
 //     }
-//     res.json(movie);
+//     return res.status(200).json({ success: true, data: movie });
 //   } catch (error) {
-//     console.error('Error fetching movie details:', error); // Log the error for debugging
-//     res.status(500).json({ message: 'Error fetching movie details', error });
+//     return res.status(500).json({ success: false, message: 'Error fetching movie details', error });
 //   }
 // };
+
+
+
+
+
+// Basic movie info by ID
+export const getMovieById = async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.movieId).select("title releaseDate genre");
+    if (!movie) return res.status(404).json({ success: false, message: 'Movie not found' });
+    return res.status(200).json({ success: true, data: movie });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Detailed movie info by ID
+export const getMovieDetails = async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.movieId);
+    if (!movie) return res.status(404).json({ success: false, message: 'Movie not found' });
+    return res.status(200).json({ success: true, data: movie });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error fetching movie details', error });
+  }
+};

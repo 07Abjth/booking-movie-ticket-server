@@ -6,10 +6,10 @@ import {
   fetchSeatLayout,
   deleteSeats,
   getSeatsByTheaterId,
-  getSeatPrices,
-  getSeatPricesForShow,
+   getSeatPricesForShow,
   getSeatPriceByShowSeatId,
-  getSeatPricesBySeatNumber
+  getSeatPricesBySeatNumber,
+  getSeatDetailsByIds
  } from '../../controllers/seatControllers.js';
  import authTheaterOwnerOrAdmin from '../../middleware/authTheaterOwnerOrAdmin.js';
   
@@ -38,15 +38,7 @@ router.delete('/delete', authTheaterOwnerOrAdmin, deleteSeats);
 router.get('/get-seats-by-theater-id/:theaterId', getSeatsByTheaterId);
 
   
-
-// // Define the route for fetching seats and their prices
-// router.get('/get-seats-and-seat-price-from-theater-and-showId/:theaterId/:showId', getSeatsAndSeatsPriceFromTheaterAndShowId);
-
-
-
-
-// // Route to get the seat price
-// router.get('/price/:seatId', getSeatPrices);
+   
 
 
 router.get('/price/:seatId', getSeatPricesBySeatNumber); 
@@ -60,6 +52,10 @@ router.get('/seats/prices/:showId', getSeatPricesForShow);
 
 // Define the route to get seat price by ShowSeat ID
 router.get('/seats/price/:showSeatId', getSeatPriceByShowSeatId);
+
+
+//get seat details by id
+router.post('/get-seat-details',getSeatDetailsByIds);
 
 
 export default router;

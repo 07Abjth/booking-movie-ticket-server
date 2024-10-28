@@ -19,7 +19,7 @@ export const authTheaterOwnerOrAdmin = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Find the user by ID extracted from the token
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).select('role'); // Fetch only the role
 
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });

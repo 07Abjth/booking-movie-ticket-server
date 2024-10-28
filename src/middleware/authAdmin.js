@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-// import Admin from '../models/adminModel.js'; 
+import Admin from '../models/adminModel.js'; 
 
 // Middleware for User Authentication
 export const authAdmin = (req, res, next) => {

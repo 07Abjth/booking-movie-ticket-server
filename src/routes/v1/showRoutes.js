@@ -1,7 +1,6 @@
 import express from 'express';
 import { authTheaterOwnerOrAdmin } from '../../middleware/authTheaterOwnerOrAdmin.js';
-import { authAdmin } from '../../middleware/authAdmin.js';
-import {
+ import {
   updateShow,
   deleteShow,
   getShowById,
