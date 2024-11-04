@@ -42,7 +42,7 @@ const router = express.Router();
 // Routes
 router.get('/moviesList', getAllMovies);                                       
 router.get('/:movieId/basic', getMovieById); // Basic movie info by ID
-router.get('/:movieId/details', getMovieDetails); // Detailed movie info by ID
+router.get('/details/:movieId', getMovieDetails); // Detailed movie info by ID
 
 // Additional routes
 router.get('/upcoming', getUpcomingMovies); // Upcoming movies
