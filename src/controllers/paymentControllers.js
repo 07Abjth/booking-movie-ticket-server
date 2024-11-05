@@ -201,6 +201,66 @@
 
 
 
+// import Stripe from 'stripe';
+// import Seat from '../models/seatModel.js';
+
+// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// // Fetch seat details by IDs
+// export const fetchSeatDetails = async (seatIds) => {
+//     try {
+//         const seats = await Seat.find({ _id: { $in: seatIds } });
+//         return seats;
+//     } catch (error) {
+//         console.error('Error fetching seat details:', error.message);
+//         throw new Error('Failed to fetch seat details');
+//     }
+// };
+
+// // Create checkout session
+// export const createCheckoutSession = async (req, res) => {
+//     const { products } = req.body;
+
+//     try {
+//         const seatIds = products.map(product => product.id);
+//         const seats = await fetchSeatDetails(seatIds);
+
+//         const validProducts = seats.map(seat => ({
+//             name: `Seat ID: ${seat.seatId}`,
+//             price: seat.price,
+//             quantity: 1,
+//         })).filter(product => product.price !== undefined);
+
+//         if (validProducts.length === 0) {
+//             return res.status(400).send({ error: 'No valid products for payment' });
+//         }
+
+//         const session = await stripe.checkout.sessions.create({
+//             payment_method_types: ['card'],
+//             line_items: validProducts.map(product => ({
+//                 price_data: {
+//                     currency: 'usd',
+//                     product_data: {
+//                         name: product.name,
+//                     },
+//                     unit_amount: product.price * 100, // Convert to cents
+//                 },
+//                 quantity: product.quantity,
+//             })),
+//             mode: 'payment',
+//             success_url: `${process.env.CLIENT_URL}/success`,
+//             cancel_url: `${process.env.CLIENT_URL}/cancel`,
+//         });
+
+//         res.json({ id: session.id });
+//     } catch (error) {
+//         console.error('Error creating checkout session:', error.message);
+//         res.status(500).send({ error: 'Internal Server Error' });
+//     }
+// };
+
+
+
 import Stripe from 'stripe';
 import Seat from '../models/seatModel.js';
 
@@ -220,20 +280,26 @@ export const fetchSeatDetails = async (seatIds) => {
 // Create checkout session
 export const createCheckoutSession = async (req, res) => {
     const { products } = req.body;
+    console.log('Received products:', products);
+
+    // Check for missing IDs or prices
+    const hasInvalidProduct = products.some(product => !product.id || product.price === null);
+    if (hasInvalidProduct) {
+        return res.status(400).send({ error: 'Invalid products: each product must have an id and price' });
+    }
+
+    const seatIds = products.map(product => product.id);
+    console.log('Mapped Seat IDs:', seatIds);
 
     try {
-        const seatIds = products.map(product => product.id);
         const seats = await fetchSeatDetails(seatIds);
+        console.log('Fetched Seat Details:', seats);
 
         const validProducts = seats.map(seat => ({
-            name: `Seat ID: ${seat.seatId}`,
+            name: `Seat ID: ${seat._id}`,
             price: seat.price,
             quantity: 1,
-        })).filter(product => product.price !== undefined);
-
-        if (validProducts.length === 0) {
-            return res.status(400).send({ error: 'No valid products for payment' });
-        }
+        }));
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -243,7 +309,7 @@ export const createCheckoutSession = async (req, res) => {
                     product_data: {
                         name: product.name,
                     },
-                    unit_amount: product.price * 100, // Convert to cents
+                    unit_amount: product.price * 100,
                 },
                 quantity: product.quantity,
             })),
@@ -252,9 +318,10 @@ export const createCheckoutSession = async (req, res) => {
             cancel_url: `${process.env.CLIENT_URL}/cancel`,
         });
 
+        console.log('Stripe session created:', session.id);
         res.json({ id: session.id });
     } catch (error) {
-        console.error('Error creating checkout session:', error.message);
+        console.error('Error creating checkout session:', error);
         res.status(500).send({ error: 'Internal Server Error' });
     }
 };
