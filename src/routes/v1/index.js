@@ -24,7 +24,7 @@ v1Router.use('/rating', ratingRouter)
 v1Router.use('/payment',paymentRouter)
 v1Router.use('/booking',bookingRouter)
 v1Router.use('/admin',adminRouter)
-
+ 
 
 
 
