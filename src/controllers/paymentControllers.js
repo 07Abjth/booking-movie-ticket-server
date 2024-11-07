@@ -486,12 +486,32 @@ export const createCheckoutSession = async (req, res) => {
             payment_method_types: ['card'],
             mode: 'payment',
             line_items: lineItems,
-            success_url: `${process.env.FRONTEND_URL}/user/payment/success`,
-            cancel_url: `${process.env.FRONTEND_URL}/user/payment/cancel`,
+            success_url: `${process.env.FRONTEND_URL}user/payment/success`,
+            cancel_url: `${process.env.FRONTEND_URL}user/payment/cancel`,
         });
+console.log('sessionId====', session.id);
 
         res.status(200).json({ success: true, sessionId: session.id });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+
+//Session status
+export const getSessionStatus = async (req, res) => {
+    try {
+        const sessionId = req.query.session_id;
+
+        // Retrieve the session from Stripe
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        res.send({
+            status: session?.status,
+            customer_email: session?.customer_details?.email,
+        });
+    } catch (error) {
+        res.status(error?.statusCode || 500).json({ message: error.message || "Internal Server Error" });
     }
 };
