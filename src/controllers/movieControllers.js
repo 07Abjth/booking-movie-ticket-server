@@ -1,92 +1,21 @@
-// import { cloudinaryInstance } from '../config/cloudinaryConfig.js';
-// import Movie from '../models/movieModel.js';
-
-//  // Create a new movie
-// export const createMovie = async (req, res) => {
-//   try {
-//     const { 
-//       title, 
-//       description, 
-//       releaseDate, 
-//       duration, 
-//       language, 
-//       genre, 
-//       director, 
-//       cast, 
-//       trending = false, 
-//       upcoming = false, 
-//       isNewRelease = false,
-//       avgRating = 0,  
-//       totalRatings = 0  
-//     } = req.body;
-
-//     if (!title || !description || !releaseDate || !duration || !language || !genre || !director || !cast) {
-//       return res.status(400).json({ success: false, message: "All required fields must be provided" });
-//     }
-
-//     if (!req.file) {
-//       return res.status(400).json({ success: false, message: 'Poster image is required' });
-//     }
-
-//     const cloudinaryResult = await cloudinaryInstance.uploader.upload(req.file.path);
-
-//     const newMovie = new Movie({
-//       title,
-//       description,
-//       releaseDate: new Date(releaseDate),
-//       duration: parseInt(duration, 10),
-//       language,
-//       genre: Array.isArray(genre) ? genre : genre.split(',').map(g => g.trim()),
-//       director,
-//       cast: Array.isArray(cast) ? cast : cast.split(',').map(c => c.trim()),
-//       image: cloudinaryResult.secure_url,
-//       trending: trending === 'true' || trending === true,
-//       upcoming: upcoming === 'true' || upcoming === true,
-//       isNewRelease: isNewRelease === 'true' || isNewRelease === true,
-//       avgRating: parseFloat(avgRating),
-//       totalRatings: parseInt(totalRatings, 10)
-//     });
-
-//     await newMovie.save();
-
-//     return res.status(201).json({ success: true, data: newMovie });
-//   } catch (error) {
-//     console.error('Error:', error);
-//     return res.status(500).json({ success: false, message: 'Server error' });
-//   }
-// };
-
- 
-
 import { cloudinaryInstance } from '../config/cloudinaryConfig.js';
 import Movie from '../models/movieModel.js';
-import fs from 'fs'; // To delete the file after uploading
+import Theater from '../models/theaterModel.js'; // ✅ FIX: Import the missing model
+import fs from 'fs';
 
 // Create a new movie
 export const createMovie = async (req, res) => {
   try {
     const { 
-      title, 
-      description, 
-      releaseDate, 
-      duration, 
-      language, 
-      genre, 
-      director, 
-      cast, 
-      trending = false, 
-      upcoming = false, 
-      isNewRelease = false,
-      avgRating = 0,  
-      totalRatings = 0  
+      title, description, releaseDate, duration, language, genre, director, cast, 
+      trending = false, upcoming = false, isNewRelease = false,
+      avgRating = 0, totalRatings = 0 
     } = req.body;
 
-    // Validate required fields
     if (!title || !description || !releaseDate || !duration || !language || !genre || !director || !cast) {
       return res.status(400).json({ success: false, message: "All required fields must be provided" });
     }
 
-    // Validate image upload
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'Poster image is required' });
     }
@@ -99,7 +28,6 @@ export const createMovie = async (req, res) => {
       return res.status(500).json({ success: false, message: 'Image upload failed' });
     }
 
-    // Create a new movie object
     const newMovie = new Movie({
       title,
       description,
@@ -117,10 +45,8 @@ export const createMovie = async (req, res) => {
       totalRatings: parseInt(totalRatings, 10)
     });
 
-    // Save the new movie to the database
     await newMovie.save();
 
-    // Optional: Delete the file after uploading to Cloudinary
     fs.unlink(req.file.path, (err) => {
       if (err) console.error('Error deleting temp file:', err);
     });
@@ -131,13 +57,6 @@ export const createMovie = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
-
-
-
-
-
-
 
 // Update movie
 export const updateMovie = async (req, res) => {
@@ -216,9 +135,6 @@ export const getNewReleases = async (req, res) => {
   }
 };
 
-
-
-
 // Get theaters by movie ID
 export const getTheatersByMovie = async (req, res) => {
   try {
@@ -235,13 +151,8 @@ export const getTheatersByMovie = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
- 
 
-
-
-
-
- // Get all movies
+// Get all movies
 export const getAllMovies = async (req, res) => {
   try {
     const movies = await Movie.find();
@@ -250,37 +161,6 @@ export const getAllMovies = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
-// // Get movie by ID
-// export const getMovieById = async (req, res) => {
-//   try {
-//     const movie = await Movie.findById(req.params.id);
-//     if (!movie) {
-//       return res.status(404).json({ success: false, message: 'Movie not found' });
-//     }
-//     return res.status(200).json({ success: true, data: movie });
-//   } catch (error) {
-//     return res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
-
-// // Get movie details by movieId
-// export const getMovieDetails = async (req, res) => {
-//   try {
-//     const movie = await Movie.findById(req.params.movieId);
-//     if (!movie) {
-//       return res.status(404).json({ success: false, message: 'Movie not found' });
-//     }
-//     return res.status(200).json({ success: true, data: movie });
-//   } catch (error) {
-//     return res.status(500).json({ success: false, message: 'Error fetching movie details', error });
-//   }
-// };
-
-
-
-
 
 // Basic movie info by ID
 export const getMovieById = async (req, res) => {

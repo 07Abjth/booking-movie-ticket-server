@@ -1,25 +1,13 @@
-import express from 'express';
-import {
-  getUserBookings,
-  getAllBookings,
-  getBookingById,
-  cancelBooking,
-} from '../../controllers/bookingControllers.js';
-import { authAdmin } from '../../middleware/authAdmin.js';
-import { authUser } from '../../middleware/authUser.js';
+import express from "express";
+import { getSessionStatus, getBookingsBySession } from "../../controllers/bookingControllers.js";
+// import { authMiddleware } from "../middlewares/authMiddleware.js"; //  
 
 const router = express.Router();
 
-// Route to get all bookings for a specific user
-router.get('/get-userBookings/:id', authUser, getUserBookings);
+// Route to check payment session status and create booking
+router.get("/session-status",  getSessionStatus);
 
-// Route to get all bookings of all users (Admin role)
-router.get('/get-allBookings', authAdmin, getAllBookings);
-
-// Route to get a specific booking by ID
-router.get('/get-booking-by-id/:id', authUser, getBookingById);
-
-// Route to cancel a booking
-router.put('/cancel-booking/:id', authUser, cancelBooking);
+// Route to fetch booking details by session ID
+router.get("/bookings",   getBookingsBySession);
 
 export default router;

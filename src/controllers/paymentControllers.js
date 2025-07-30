@@ -1,517 +1,190 @@
+import Stripe from "stripe";
+import Booking from "../models/bookingModel.js";
 
-
-//  import Stripe from 'stripe';
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // Secret key from .env
-
-// const frontend_url = process.env.FRONTEND_URL
-
-
-
-// export const createPaymentIntent = async (req, res) => {
-//   try {
-//     const { amount, currency } = req.body; // amount in smallest currency unit (e.g., 1000 = $10)
-    
-//     const paymentIntent = await stripe.paymentIntents.create({
-//       amount,
-//       currency,
-//       automatic_payment_methods: { enabled: true },  // Automatically select payment methods
-//     });
-    
-//     res.status(200).json({
-//       success: true,
-//       clientSecret: paymentIntent.client_secret,  // Send client_secret to the frontend
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
-
-//  //checkout session 
-
-// export const createCheckoutSession = async (req, res) => {
-  
-  
-  
-  
-//     // const { priceId } = req.body; // Get the price or amount from the request body
-
-//   try {
-
-//     const {products} = req.body
-
-//     const lineItems = products.map((product)=> ({
-//         price_data:{
-//             currency:"inr",
-//             product_data:{
-//                 name:product.name,
-//                 images:[product.image],
-//             },
-//             unit_amount:Math.round(product.price * 100),
-//         },
-//         quantity:product.quantity,
-//     }));
-
-//     const session = await stripe.checkout.sessions.create({
-//       payment_method_types: ['card'],  // You can add more payment methods like 'upi', 'ideal', etc.
-//       mode: 'payment',  // 'payment' is used for one-time payments. For subscriptions, use 'subscription'
-//       line_items: lineItems,
-//       success_url: `${process.env.FRONTEND_URL}/user/payment/success`,  // Redirect after success
-//       cancel_url: `${process.env.FRONTEND_URL}/user/payment/cancel`,  // Redirect after cancel
-//     });
-
-//     res.status(200).json({ success: true, sessionId: session.id });  // Send the session ID to frontend
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
-
-
-// import Stripe from 'stripe';
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // Secret key from .env
-
-// const frontend_url = process.env.FRONTEND_URL;
-
-// export const createPaymentIntent = async (req, res) => {
-//   try {
-//     const { amount, currency } = req.body;
-
-//     const paymentIntent = await stripe.paymentIntents.create({
-//       amount,
-//       currency,
-//       automatic_payment_methods: { enabled: true },
-//     });
-
-//     // Debugging: Log the clientSecret and paymentIntent ID
-//     console.log('Client Secret:', paymentIntent.client_secret);
-//     console.log('Payment Intent ID:', paymentIntent.id);
-
-//     res.status(200).json({
-//       success: true,
-//       clientSecret: paymentIntent.client_secret,  // Send the clientSecret to the frontend
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
-
-// // Checkout session
-// export const createCheckoutSession = async (req, res) => {
-//   try {
-//     const { products } = req.body;
-
-//     const lineItems = products.map((product) => ({
-//       price_data: {
-//         currency: "inr",
-//         product_data: {
-//           name: product.name,
-//           images: [product.image],
-//         },
-//         unit_amount: Math.round(product.price * 100),
-//       },
-//       quantity: product.quantity,
-//     }));
-
-//     const session = await stripe.checkout.sessions.create({
-//       payment_method_types: ['card'],
-//       mode: 'payment',
-//       line_items: lineItems,
-//       success_url: `${frontend_url}/user/payment/success`,
-//       cancel_url: `${frontend_url}/user/payment/cancel`,
-//     });
-
-//     res.status(200).json({ success: true, sessionId: session.id });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
-
-
-
-
-
-// import Stripe from 'stripe';
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); 
-
-// const frontend_url = process.env.FRONTEND_URL
-
-
-// export const createCheckoutSession = async (req, res) => {
-//   try {
-//       console.log("Request body:", req.body); // Log the request body
-
-//       const { products } = req.body;
-
-//       if (!products || products.length === 0) {
-//           return res.status(400).json({ success: false, message: "No products found in request." });
-//       }
-
-//       const lineItems = products.map((product) => {
-//           if (typeof product.price !== 'number' || product.price <= 0) {
-//               throw new Error(`Invalid price for product: ${product.name}`);
-//           }
-//           return {
-//               price_data: {
-//                   currency: "inr",
-//                   product_data: {
-//                       name: product.name,
-//                       // Add image URL here if available
-//                       // images: [product.image],
-//                   },
-//                   unit_amount: Math.round(product.price * 100), // Ensure price is in smallest currency unit
-//               },
-//               quantity: product.quantity,
-//           };
-//       });
-
-//       const frontend_url = process.env.FRONTEND_URL || 'http://localhost:3000';
-
-//       const session = await stripe.checkout.sessions.create({
-//           payment_method_types: ['card'],
-//           mode: 'payment',
-//           line_items: lineItems,
-//           success_url: `${frontend_url}/user/payment/success`,
-//           cancel_url: `${frontend_url}/user/payment/cancel`,
-//       });
-
-//       res.status(200).json({ success: true, sessionId: session.id });
-//   } catch (error) {
-//       console.error("Error creating checkout session:", error); // Log the error
-//       res.status(500).json({
-//           success: false,
-//           message: error.message,
-//       });
-//   }
-// };
-
-
-
-// import Stripe from 'stripe';
-// import Seat from '../models/seatModel.js';
-
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-// // Fetch seat details by IDs
-// export const fetchSeatDetails = async (seatIds) => {
-//     try {
-//         const seats = await Seat.find({ _id: { $in: seatIds } });
-//         return seats;
-//     } catch (error) {
-//         console.error('Error fetching seat details:', error.message);
-//         throw new Error('Failed to fetch seat details');
-//     }
-// };
-
-// // Create checkout session
-// export const createCheckoutSession = async (req, res) => {
-//     const { products } = req.body;
-
-//     try {
-//         const seatIds = products.map(product => product.id);
-//         const seats = await fetchSeatDetails(seatIds);
-
-//         const validProducts = seats.map(seat => ({
-//             name: `Seat ID: ${seat.seatId}`,
-//             price: seat.price,
-//             quantity: 1,
-//         })).filter(product => product.price !== undefined);
-
-//         if (validProducts.length === 0) {
-//             return res.status(400).send({ error: 'No valid products for payment' });
-//         }
-
-//         const session = await stripe.checkout.sessions.create({
-//             payment_method_types: ['card'],
-//             line_items: validProducts.map(product => ({
-//                 price_data: {
-//                     currency: 'usd',
-//                     product_data: {
-//                         name: product.name,
-//                     },
-//                     unit_amount: product.price * 100, // Convert to cents
-//                 },
-//                 quantity: product.quantity,
-//             })),
-//             mode: 'payment',
-//             success_url: `${process.env.CLIENT_URL}/success`,
-//             cancel_url: `${process.env.CLIENT_URL}/cancel`,
-//         });
-
-//         res.json({ id: session.id });
-//     } catch (error) {
-//         console.error('Error creating checkout session:', error.message);
-//         res.status(500).send({ error: 'Internal Server Error' });
-//     }
-// };
-
-
-
-// import Stripe from 'stripe';
-// import Seat from '../models/seatModel.js';
-
-
-// // Fetch seat details by IDs
-// export const fetchSeatDetails = async (seatIds) => {
-//     try {
-//         const seats = await Seat.find({ _id: { $in: seatIds } });
-//         return seats;
-//     } catch (error) {
-//         console.error('Error fetching seat details:', error.message);
-//         throw new Error('Failed to fetch seat details');
-//     }
-// };
-
-
-// import Stripe from 'stripe';
-// import Seat from '../models/seatModel.js';
-
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-//  export const createCheckoutSession = async (req, res) => {
-//     try {
-//           const { products } = req.body;
-//     console.log('Received products:', products);
-
-//     // Check for missing IDs or prices
-//     const hasInvalidProduct = products.some(product => !product.id || product.price === null);
-//     if (hasInvalidProduct) {
-//         return res.status(400).send({ error: 'Invalid products: each product must have an id and price' });
-//     }
-
-//     const seatIds = products.map(product => product.id);
-//     console.log('Mapped Seat IDs:', seatIds);
-
-  
-//         const seats = await fetchSeatDetails(seatIds);
-//         console.log('Fetched Seat Details:', seats);
-
-//         const validProducts = seats.map(seat => ({
-//             name: `Seat ID: ${seat._id}`,
-//             price: seat.price,
-//             quantity: 1,
-//         }));
-
-//         const session = await stripe.checkout.sessions.create({
-//             payment_method_types: ['card'],
-//             line_items: validProducts.map(product => ({
-//                 price_data: {
-//                     currency: 'usd',
-//                     product_data: {
-//                         name: product.name,
-//                     },
-//                     unit_amount: product.price * 100,
-//                 },
-//                 quantity: product.quantity,
-//             })),
-//             mode: 'payment',
-//             success_url: `${process.env.CLIENT_URL}/success`,
-//             cancel_url: `${process.env.CLIENT_URL}/cancel`,
-//         });
-
-//         console.log('Stripe session created:', session.id);
-//         res.json({ id: session.id });
-//     } catch (error) {
-//         console.error('Error creating checkout session:', error);
-//         res.status(500).send({ error: 'Internal Server Error' });
-//     }
-// };
-
-
-// import Stripe from 'stripe';
-// import Seat from '../models/seatModel.js';
-
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-// export const createCheckoutSession = async (req, res) => {
-//     try {
-//         const { products } = req.body;
-//         console.log('Received products:', products);
-
-//         // Additional check: log products before mapping
-//         if (!products || products.length === 0) {
-//             console.error('No products found in request.');
-//             return res.status(400).send({ error: 'No products provided' });
-//         }
-
-//         const hasInvalidProduct = products.some(product => !product.id || product.price === null);
-//         if (hasInvalidProduct) {
-//             console.error('Invalid products:', products);
-//             return res.status(400).send({ error: 'Invalid products: each product must have an id and price' });
-//         }
-
-//         const seatIds = products.map(product => product.id);
-//         console.log('Mapped Seat IDs:', seatIds);
-
-//         const seats = await fetchSeatDetails(seatIds);  // Assuming this function fetches the seat details from DB
-//         console.log('Fetched Seat Details:', seats);
-
-//         if (!seats || seats.length === 0) {
-//             console.error('No seat details found for IDs:', seatIds);
-//             return res.status(404).send({ error: 'Seats not found' });
-//         }
-
-//         // Map seat details to valid products for Stripe
-//         const validProducts = seats.map(seat => ({
-//             name: `Seat ID: ${seat._id}`,
-//             price: seat.price,
-//             quantity: 1,
-//         }));
-
-//         // Create Stripe session
-//         const session = await stripe.checkout.sessions.create({
-//             payment_method_types: ['card'],
-//             line_items: validProducts.map(product => ({
-//                 price_data: {
-//                     currency: 'inr',
-//                     product_data: { 
-//                         name: product.name,
-//                         // Assuming each seat has an 'image' field, otherwise remove the image line
-//                         images: [product.image || 'default-image-url'], // Provide default image if not available
-//                     },
-//                     unit_amount: product.price * 100, // Convert to paise (smallest currency unit)
-//                 },
-//                 quantity: product.quantity,
-//             })),
-//             mode: 'payment',
-//             success_url: `${process.env.CLIENT_URL}/success`,
-//             cancel_url: `${process.env.CLIENT_URL}/cancel`,
-//         });
-
-//         console.log('Stripe session created:', session.id);
-//         res.json({ id: session.id });
-//     } catch (error) {
-//         console.error('Error creating checkout session:', error);
-//         res.status(500).send({ error: 'Internal Server Error' });
-//     }
-// };
-
-// // Helper function to fetch seat details from the database
-// async function fetchSeatDetails(seatIds) {
-//     try {
-//         const seats = await Seat.find({ _id: { $in: seatIds } });
-//         return seats;
-//     } catch (error) {
-//         console.error('Error fetching seat details:', error);
-//         throw new Error('Error fetching seat details');
-//     }
-// }
-
-
-
-
-
-
-
-
-// export const createCheckoutSession = async (req, res) => {
-  
-  
-//     // const { priceId } = req.body; // Get the price or amount from the request body
-
-//   try {
-
-//     const {products} = req.body
-
-//     const lineItems = products.map((product)=> ({
-//         price_data:{
-//             currency:"inr",
-//             product_data:{
-//                 name:product.name,
-//                 images:[product.image],
-//             },
-//             unit_amount:Math.round(product.price * 100),
-//         },
-//         quantity:product.quantity,
-//     }));
-
-//     const session = await stripe.checkout.sessions.create({
-//       payment_method_types: ['card'],  // You can add more payment methods like 'upi', 'ideal', etc.
-//       mode: 'payment',  // 'payment' is used for one-time payments. For subscriptions, use 'subscription'
-//       line_items: lineItems,
-//       success_url: `${process.env.FRONTEND_URL}/user/payment/success`,  // Redirect after success
-//       cancel_url: `${process.env.FRONTEND_URL}/user/payment/cancel`,  // Redirect after cancel
-//     });
-
-//     res.status(200).json({ success: true, sessionId: session.id });  // Send the session ID to frontend
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
-
-
-
-
-
-
-// Backend - Controller for creating a Stripe checkout session
-import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createCheckoutSession = async (req, res) => {
-    try {
-        const { products } = req.body;
+  try {
+    const { products } = req.body;
+    const userId = req.userId;
 
-        const lineItems = products.map((product) => ({
-            price_data: {
-                currency: 'inr',
-                product_data: {
-                    name: product.movieTitle,
-                    images: [product.image || ''],  // Replace with your image URL logic
-                },
-                unit_amount: Math.round(product.price * 100),  // Convert to the smallest currency unit
-            },
-            quantity: product.quantity || 1,
-        }));
-
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            mode: 'payment',
-            line_items: lineItems,
-            success_url: `${process.env.FRONTEND_URL}user/payment/success`,
-            cancel_url: `${process.env.FRONTEND_URL}user/payment/cancel`,
-        });
-console.log('sessionId====', session.id);
-
-        res.status(200).json({ success: true, sessionId: session.id });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required" });
     }
+
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ success: false, message: "Invalid or empty products" });
+    }
+
+    const lineItems = products.map((product) => ({
+      price_data: {
+        currency: 'inr',
+        product_data: {
+          name: product.movieTitle || "Movie Ticket",
+        },
+        unit_amount: Math.round(product.price * 100),
+      },
+      quantity: product.quantity || 1,
+    }));
+
+    const totalAmount = products.reduce((sum, p) => sum + p.price * (p.quantity || 1), 0);
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: 'payment',
+      success_url: `${process.env.FRONTEND_URL}/user/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL}/user/payment/cancel`,
+     metadata: {
+  userId: String(userId),
+  seats: products.map(p => p.seatId).join(','),
+  movie: String(products[0].movieId),
+  theater: String(products[0].theaterId),
+  show: String(products[0].showId),
+  totalAmount: totalAmount.toFixed(2),
+}
+,
+    });
+
+    res.status(200).json({ success: true, sessionId: session.id });
+
+  } catch (error) {
+    console.error("Error creating checkout session:", error);
+    res.status(500).json({ success: false, message: "Failed to create checkout session", error: error.message });
+  }
 };
 
+// ✅ Get Stripe Session Status and Create Booking
+// export const getSessionStatus = async (req, res) => {
+//   try {
+//     const { sessionId } = req.params;
+
+//     if (!sessionId) {
+//       return res.status(400).json({ success: false, message: "Session ID is required" });
+//     }
+
+//     const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+//     if (session.payment_status === "paid") {
+//       const { userId, seats, movieId, theaterId } = session.metadata;
+
+//       if (!userId || !seats || !movieId || !theaterId) {
+//         return res.status(400).json({ success: false, message: "Missing metadata for booking" });
+//       }
+
+//       const seatIds = seats.split(',');
+
+//       const existingBooking = await Booking.findOne({ sessionId });
+//       if (existingBooking) {
+//         return res.status(200).json({
+//           success: true,
+//           message: "Booking already exists",
+//           booking: existingBooking,
+//         });
+//       }
+
+//       const newBooking = new Booking({
+//         sessionId,
+//         user: userId,
+//         movie: movieId,
+//         theater: theaterId,
+//         selectedSeats: seatIds,
+//         totalAmount: session.amount_total / 100, // Convert paisa to INR
+//         paymentStatus: session.payment_status,
+//       });
+
+//       await newBooking.save();
+
+//       return res.status(201).json({
+//         success: true,
+//         message: "Booking created successfully",
+//         booking: newBooking,
+//       });
+//     } else {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Payment not completed",
+//         paymentStatus: session.payment_status,
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Error fetching session status:", error.message);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
 
 
-//Session status
-export const getSessionStatus = async (req, res) => {
-    try {
-        const sessionId = req.query.session_id;
+// ✅ Get Booking Details by Session ID
+export const getBookingsBySession = async (req, res) => {
+  try {
+    const { session_id } = req.query;
 
-        // Retrieve the session from Stripe
-        const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-        res.send({
-            status: session?.status,
-            customer_email: session?.customer_details?.email,
-        });
-    } catch (error) {
-        res.status(error?.statusCode || 500).json({ message: error.message || "Internal Server Error" });
+    if (!session_id) {
+      return res.status(400).json({ success: false, message: "Session ID is required." });
     }
+
+    const booking = await Booking.findOne({ sessionId: session_id }).populate("movie theater");
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "No booking found for this session." });
+    }
+
+    res.status(200).json({ success: true, booking });
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error." });
+  }
+};
+
+export const getSessionStatus = async (req, res) => {
+  try {
+    const sessionId = req.params.sessionId;
+    if (!sessionId) {
+      return res.status(400).json({ success: false, message: "Session ID is required" });
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (!session) {
+      return res.status(404).json({ success: false, message: "Session not found" });
+    }
+
+    const { payment_status, metadata } = session;
+
+    if (payment_status !== "paid") {
+      return res.status(400).json({ success: false, message: "Payment not successful" });
+    }
+
+    const { userId, movie, theater, seats, totalAmount, showTime } = metadata;
+
+    if (!userId || !movie || !theater || !seats || !totalAmount) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing metadata for booking",
+      });
+    }
+
+    const newBooking = await Booking.create({
+      user: userId,
+      movie,
+      theater,
+      showTime: showTime || metadata.showTime, // Use showTime instead of show
+      selectedSeats: seats.split(','),
+      totalAmount: parseFloat(totalAmount),
+      paymentStatus: payment_status,
+      sessionId,
+    });
+
+    res.status(200).json({
+      success: true,
+      booking: newBooking,
+    });
+
+  } catch (error) {
+    console.error("Error fetching session:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Unable to fetch session status",
+      error: error.message,
+    });
+  }
 };

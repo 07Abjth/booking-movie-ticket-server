@@ -1,16 +1,15 @@
- import express from 'express';
-import { createCheckoutSession, getSessionStatus } from '../../controllers/paymentControllers.js';
- 
+import express from 'express';
+import {
+  createCheckoutSession,
+  getSessionStatus,
+  getBookingsBySession
+} from '../../controllers/paymentControllers.js';
+import { authUser } from '../../middleware/authUser.js';
 
 const router = express.Router();
 
-// router.post('/create-intent', createPaymentIntent); // Removed the `:Id`
-
-router.post('/create-checkout-session',createCheckoutSession )
-
-
-// Session status route
-router.get('/session-status', getSessionStatus);
-
+router.post('/create-checkout-session', authUser, createCheckoutSession);
+router.get('/session-status/:sessionId', authUser, getSessionStatus);
+router.get('/booking-details', authUser, getBookingsBySession);
 
 export default router;
