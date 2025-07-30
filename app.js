@@ -18,11 +18,11 @@ app.use(cookieParser());
 const corsOptions = {
   origin: [
     'https://cine-ticket-book.vercel.app', // Production frontend
-    'http://localhost:5173', 
-    "http://localhost:5174",    // Development frontend
-    'http://localhost:5175',               // Another frontend (if any)
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
   ],
-  credentials: true, // Allow credentials (if needed)
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -32,20 +32,10 @@ app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
-app.use('/api', apiRouter); // All routes under /api
+// API routes
+app.use('/api', apiRouter);
 
-// Server startup
-const PORT = serverConfig.port || 5000;
+// Vercel expects an exported handler, not a running server
+await dbConnect(); // Connect to DB before export
 
-const startServer = async () => {
-  try {
-    await dbConnect(); // Establish DB connection
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('Failed to start the server:', error);
-  }
-};
-
-startServer();
+export default app;
