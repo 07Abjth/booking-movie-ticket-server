@@ -17,7 +17,6 @@ app.use(cookieParser());
 // Configure CORS
 const corsOptions = {
   origin: [
-    'https://booking-movie-ticket-client.vercel.app/',
     'https://booking-movie-ticket-client.vercel.app',
     'http://localhost:5173',
     'http://localhost:5174',
