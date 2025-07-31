@@ -14,21 +14,18 @@ const app = express();
 app.use(express.json()); // Parse JSON bodies
 app.use(cookieParser());
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://booking-movie-ticket-client.vercel.app",
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "https://booking-movie-ticket-client.vercel.app",
+  ],
   credentials: true,
-}));
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
+  allowedHeaders: "Content-Type,Authorization",
+};
+
+app.use(cors(corsOptions));
+
 
 // Test route
 app.get('/', (req, res) => {
