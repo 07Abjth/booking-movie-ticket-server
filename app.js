@@ -14,23 +14,21 @@ const app = express();
 app.use(express.json()); // Parse JSON bodies
 app.use(cookieParser());
 
-// Configure CORS
-import cors from 'cors';
-
 const allowedOrigins = [
-  'http://localhost:5173', // Vite dev server
-  'http://localhost:3000', // React dev server
-  'https://booking-movie-ticket-client.vercel.app', // production frontend
+  "http://localhost:5173",
+  "https://booking-movie-ticket-client.vercel.app",
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-app.use(cors(corsOptions));
 
 // Test route
 app.get('/', (req, res) => {
@@ -40,7 +38,13 @@ app.get('/', (req, res) => {
 // API routes
 app.use('/api', apiRouter);
 
-// Vercel expects an exported handler, not a running server
-await dbConnect(); // Connect to DB before export
+// Connect to DB before starting server
+await dbConnect();
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
 
 export default app;
