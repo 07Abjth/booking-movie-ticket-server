@@ -15,16 +15,20 @@ app.use(express.json()); // Parse JSON bodies
 app.use(cookieParser());
 
 // Configure CORS
-const corsOptions = {
-  origin: [
-    'https://booking-movie-ticket-client.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:5175',
-    
-  ],
+import cors from 'cors';
+
+const allowedOrigins = [
+  'http://localhost:5173', // Vite dev server
+  'http://localhost:3000', // React dev server
+  'https://booking-movie-ticket-client.vercel.app', // production frontend
+];
+
+app.use(cors({
+  origin: allowedOrigins,
   credentials: true,
-};
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(cors(corsOptions));
 
