@@ -73,17 +73,25 @@ export const loginUser = async (req, res) => {
     }
 
     const token = generateToken(userExists, 'user');
+    
+    // Set cookie with proper settings for production
     res.cookie("token", token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax", // <-- this is key!
-  maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-});
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Changed from "strict" to "none"
+      maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+    });
 
     res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      token
+      token, // Send token in response body too
+      user: {
+        _id: userExists._id,
+        name: userExists.name,
+        email: userExists.email,
+        role: userExists.role
+      }
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -134,6 +142,8 @@ export const userProfile = async (req, res) => {
 export const checkUser = async (req, res) => {
   try {
     const { email, id } = req.query;
+    console.log("Cookies received:", req.cookies);
+
     if (!req.user) {
       return res.status(401).json({ success: false, message: "User not authenticated" });
     }
